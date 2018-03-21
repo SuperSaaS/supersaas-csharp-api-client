@@ -16,7 +16,6 @@ namespace SuperSaaS.API
 
         public string AccountName { get; set; }
         public string Password { get; set; }
-        public string UserName { get; set; }
         public string Host { get; set; }
         public bool Test { get; set; }
 
@@ -32,17 +31,15 @@ namespace SuperSaaS.API
             configuration = configuration ?? new Configuration();
             this.AccountName = configuration.AccountName;
             this.Password = configuration.Password;
-            this.UserName = configuration.UserName;
             this.Host = configuration.Host;
             this.Test = configuration.Test;
             this.Init();
         }
 
-        public Client(string accountName, string password, string userName = null, string host = null, bool test = false) 
+        public Client(string accountName, string password, string host = null, bool test = false) 
         {
             this.AccountName = accountName;
             this.Password = password;
-            this.UserName = userName;
             this.Host = host ?? Configuration.DEFAULT_HOST;
             this.Test = test;
             this.Init();

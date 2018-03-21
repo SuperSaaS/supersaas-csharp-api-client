@@ -19,30 +19,27 @@ Json.NET.
 
 From within Visual Studio you can use the NuGet GUI to search for and install the SuperSaaS SDK NuGet package. Alternatively, type the following command into the Package Manager Console:
 
-    Install-Package SuperSaaS.CSharp.SDK
+    Install-Package SuperSaaS.API.Client
 
 ## Configuration
 
 Initialize the SuperSaaS `Client` with authorization credentials:
 
-    using SuperSaaS.CSharp.SDK;
+    using SuperSaaS.API.Client;
     Client client = new Client("accnt", "pwd", "usr");
     client.AccountName; //=> 'accnt'
     client.Password; //=> 'pwd'
-    client.UserName; //=> 'usr'
 
-If the client isn't configured explicitly, it will use default `ENV` variables for the account name, password, and user name.
+If the client isn't configured explicitly, it will use default `ENV` variables for the account name and password.
 Set these `ENV` variables before calling the client. 
 
-    ENV['SSS_SDK_ACCOUNT_NAME'] = 'accnt'
-    ENV['SSS_SDK_USER_NAME'] = 'usr'
-    ENV['SSS_SDK_PASSWORD'] = 'pwd' 
+    ENV['SSS_API_ACCOUNT_NAME'] = 'accnt'
+    ENV['SSS_API_PASSWORD'] = 'pwd' 
 
-    using SuperSaaS.CSharp.SDK;
+    using SuperSaaS.API.Client;
     Client client = new Client()
     client.AccountName; //=> 'accnt'
     client.Password; //=> 'pwd'
-    client.UserName; //=> 'usr'
 
 ## API Methods
 
@@ -195,7 +192,7 @@ Get a single form by `form_id`:
 
 The HTTP requests can be stubbed by setting the client's `Test` property, e.g.
 
-    using SuperSaaS.CSharp.SDK;
+    using SuperSaaS.API.Client;
     Client client = new Client();
     client.Test = true;
 
@@ -231,4 +228,4 @@ The package follows [semantic versioning](https://semver.org/), i.e. MAJOR.MINOR
 
 ## License
 
-The SuperSaaS C# SDK is available under the MIT license. See the LICENSE file for more info.
+The SuperSaaS C# API Client is available under the MIT license. See the LICENSE file for more info.

@@ -7,15 +7,13 @@ namespace SuperSaaS.API
 
         public string AccountName;
         public string Password;
-        public string UserName;
         public string Host;
         public bool Test;
 
         public Configuration()
         {
-            this.AccountName = Environment.GetEnvironmentVariable("SSS_SDK_ACCOUNT_NAME");
-            this.Password = Environment.GetEnvironmentVariable("SSS_SDK_PASSWORD");
-            this.UserName = Environment.GetEnvironmentVariable("SSS_SDK_USER_NAME");
+            this.AccountName = Environment.GetEnvironmentVariable("SSS_API_ACCOUNT_NAME");
+            this.Password = Environment.GetEnvironmentVariable("SSS_API_PASSWORD");
             this.Test = false;
             this.Host = Configuration.DEFAULT_HOST;
         }

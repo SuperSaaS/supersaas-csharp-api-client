@@ -35,6 +35,7 @@
     <Compile Include="AppointmentsTest.cs" />
     <Compile Include="FormsTest.cs" />
     <Compile Include="UsersTest.cs" />
+    <Compile Include="SchedulesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
