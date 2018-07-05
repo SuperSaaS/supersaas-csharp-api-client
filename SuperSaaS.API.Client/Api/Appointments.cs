@@ -150,10 +150,13 @@ namespace SuperSaaS.API.Api
             return this.Client.Put<Appointment>(path, data, query);
         }
 
-        public void Delete(int appointmentId)
+        public void Delete(int scheduleId, int appointmentId)
         {
+            JsonArgs query = new JsonArgs {
+                { "schedule_id", scheduleId.ToString() }
+            };
             string path = "/bookings/" + appointmentId;
-            this.Client.Delete<Appointment>(path);
+            this.Client.Delete<Appointment>(path, null, query);
         }
 
         public Appointment[] Changes(int scheduleId, DateTime fromTime)

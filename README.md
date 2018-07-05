@@ -130,9 +130,9 @@ Update an appointment by `schedule_id` and `appointment_id` with appointment att
 
 #### Delete Appointment/Booking
 
-Delete a single appointment by `appointment_id`:
+Delete a single appointment by `schedule_id` and `appointment_id`:
 
-    client.Appointments.Delete(12345);
+    client.Appointments.Delete(12345, 67890);
 
 #### Get Appointment/Booking
 

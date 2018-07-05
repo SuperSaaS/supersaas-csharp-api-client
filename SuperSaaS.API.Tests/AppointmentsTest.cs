@@ -47,7 +47,7 @@ namespace SuperSaaS.API.Tests
         [Test()]
         public void DeleteTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Delete(456); });
+            Assert.DoesNotThrow(() => { this.Client.Appointments.Delete(123, 456); });
         }
 
         [Test()]
