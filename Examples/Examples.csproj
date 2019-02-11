@@ -33,5 +33,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SuperSaaS.API.Client\SuperSaaS.API.Client.csproj">
+      <Project>{BB20D879-6063-46D9-9AB1-3A9C142D3A91}</Project>
+      <Name>SuperSaaS.API.Client</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

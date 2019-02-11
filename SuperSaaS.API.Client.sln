@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSaaS.API.Tests", "Supe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSaaS.API.Client", "SuperSaaS.API.Client\SuperSaaS.API.Client.csproj", "{BB20D879-6063-46D9-9AB1-3A9C142D3A91}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{C39777E5-5755-4544-B3A2-FC68936479AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{BB20D879-6063-46D9-9AB1-3A9C142D3A91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB20D879-6063-46D9-9AB1-3A9C142D3A91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB20D879-6063-46D9-9AB1-3A9C142D3A91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C39777E5-5755-4544-B3A2-FC68936479AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C39777E5-5755-4544-B3A2-FC68936479AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C39777E5-5755-4544-B3A2-FC68936479AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C39777E5-5755-4544-B3A2-FC68936479AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

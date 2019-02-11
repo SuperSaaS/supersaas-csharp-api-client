@@ -70,7 +70,7 @@ namespace SuperSaaS.API
 
         private T Request<T>(string httpMethod, string path, NestedJsonArgs postData = null, JsonArgs queryData = null)
         {
-            string url = this.Host + "/" + path + ".json" + this.dictionaryToQuerystring(queryData);
+            string url = this.Host + "/api/" + path + ".json" + this.dictionaryToQuerystring(queryData);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
             request.Method = httpMethod;
