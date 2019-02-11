@@ -107,7 +107,7 @@ namespace SuperSaaS.API.Api
             }
             NestedJsonArgs data = new NestedJsonArgs
             {
-                { "appointment", appointmentData }
+                {"booking", appointmentData }
             };
             JsonArgs query = new JsonArgs { 
                 { "schedule_id", scheduleId.ToString() },
