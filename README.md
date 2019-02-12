@@ -188,6 +188,14 @@ Get a single form by `form_id`:
 
     client.Forms.Get(12345); //=> SuperSaaS.CSharp.Models.Form
 
+## Examples
+
+The Examples project contains a configurable app demonstrating how to use the API Client for common requests.
+
+The examples will require your account name, password, and some of the examples a schedule id and/or user id and/or form id.
+
+IMPORTANT: some of the example API requests are destructive or may incur a cost, such as deleting or adding appointments, respectively.
+
 ## Testing
 
 The HTTP requests can be stubbed by setting the client's `Test` property, e.g.
