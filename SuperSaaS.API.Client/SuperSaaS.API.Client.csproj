@@ -62,6 +62,7 @@
     <Compile Include="Api\Schedules.cs" />
     <Compile Include="Models\Schedule.cs" />
     <Compile Include="Models\Resource.cs" />
+    <Compile Include="Models\Changes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

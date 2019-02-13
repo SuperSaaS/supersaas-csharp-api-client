@@ -166,23 +166,23 @@ namespace SuperSaaS.API.Api
             this.Client.Delete<Appointment>(path, null, query);
         }
 
-        public Appointment[] Changes(int scheduleId, DateTime fromTime)
+        public Changes Changes(int scheduleId, DateTime fromTime)
         {
             string path = "/changes/" + scheduleId.ToString();
             JsonArgs data = new JsonArgs {
                 {"from", fromTime.ToString("yyyy-MM-dd HH:mm:ss")}
             };
-            return this.Client.Get<Appointment[]>(path, data);
+            return this.Client.Get<Changes>(path, data);
         }
 
-        public Slot[] ChangesSlots(int scheduleId, DateTime fromTime)
+        public Changes ChangesSlots(int scheduleId, DateTime fromTime)
         {
             string path = "/changes/" + scheduleId.ToString();
             JsonArgs data = new JsonArgs {
                 {"from", fromTime.ToString("yyyy-MM-dd HH:mm:ss")},
                 {"slot", "true"}
             };
-            return this.Client.Get<Slot[]>(path, data);
+            return this.Client.Get<Changes>(path, data);
         }
     
     }

@@ -15,7 +15,7 @@ namespace Examples
         private const int CAPACITY_SLOT_ID = 0;
         private const int RESOURCE_SCHEDULE_ID = 0;
         private const int SERVICE_SCHEDULE_ID = 0;
-        private const int USER_ID = 5671892;
+        private const int USER_ID = 0;
 
         private static Client client;
         private static Random random = new Random();
@@ -37,8 +37,10 @@ namespace Examples
                     createUpdateDeleteBooking(USER_ID);
                     createUpdateDeleteReservation(USER_ID);
                     createUpdateDeleteAppointment(USER_ID);
-                    //updateDeleteUser(USER_ID);
+                    updateDeleteUser(USER_ID);
                 }
+
+                listChanges();
             } catch (SSSException e)
             {
                 Console.WriteLine("Error!");
@@ -49,7 +51,6 @@ namespace Examples
 
         private static void listSchedulesAndResources()
         {
-
             Console.WriteLine("listing schedules...");
             Schedule[] schedules = client.Schedules.List();
             for (int i = 0; i < schedules.Length; i++)
@@ -100,6 +101,7 @@ namespace Examples
         {
             if (RESOURCE_SCHEDULE_ID == 0) return;
 
+            int days = random.Next(1, 90);
             var data = new Dictionary<string, string>
             {
                 { "full_name", "example" },
@@ -108,7 +110,9 @@ namespace Examples
                 { "phone", "555-5556" },
                 { "mobile", "555-5555" },
                 { "email", "example@example.com" },
-                { "name", "example@example.com" }
+                { "name", "example@example.com" },
+                { "start",  DateTime.Now.AddDays(days).ToString("YYYY-MM-DD HH:MM:SS") },
+                { "finish",  DateTime.Now.AddDays(days).AddHours(1).ToString("YYYY-MM-DD HH:MM:SS") }
             };
             Console.WriteLine("creating new reservation...");
             Appointment appointment = client.Appointments.Create(RESOURCE_SCHEDULE_ID, userId, data);
@@ -117,6 +121,46 @@ namespace Examples
         private static void createUpdateDeleteAppointment(int userId)
         {
             if (SERVICE_SCHEDULE_ID == 0) return;
+
+            int days = random.Next(1, 90);
+            var data = new Dictionary<string, string>
+            {
+                { "full_name", "example" },
+                { "description", "desc" },
+                { "address", "addr" },
+                { "phone", "555-5556" },
+                { "mobile", "555-5555" },
+                { "email", "example@example.com" },
+                { "name", "example@example.com" },
+                { "start",  DateTime.Now.AddDays(days).ToString("YYYY-MM-DD HH:MM:SS") },
+                { "finish",  DateTime.Now.AddDays(days).AddHours(1).ToString("YYYY-MM-DD HH:MM:SS") }
+            };
+            Console.WriteLine("creating new appointment...");
+            Appointment appointment = client.Appointments.Create(SERVICE_SCHEDULE_ID, userId, data);
+        }
+
+        private static void listChanges()
+        {
+            int id = RESOURCE_SCHEDULE_ID > 0 ? RESOURCE_SCHEDULE_ID : SERVICE_SCHEDULE_ID;
+            Console.WriteLine("listing bookings changes...");
+            if (id > 0)
+            {
+                Changes changes = client.Appointments.Changes(id, DateTime.Now.AddDays(-30));
+                for (int i = 0; i < changes.bookings.Length; i++)
+                {
+                    Console.WriteLine(" " + changes.bookings[i].id);
+                }
+            }
+
+            Console.WriteLine("listing slots changes...");
+            if (CAPACITY_SCHEDULE_ID > 0)
+            {
+                Changes changes = client.Appointments.ChangesSlots(CAPACITY_SCHEDULE_ID, DateTime.Now.AddDays(-30));
+                for (int i = 0; i < changes.slots.Length; i++)
+                {
+                    Console.WriteLine(" " + changes.slots[i].id);
+                }
+            }
         }
 
         private static void listUsers()
@@ -145,14 +189,17 @@ namespace Examples
 
         private static void updateDeleteUser(int userId)
         {
+            Console.WriteLine("Getting user " + userId + "...");
+            User user = client.Users.Get(userId);
+            Console.WriteLine(" " + user.name);
+
             var data = new Dictionary<string, string>
             {
                 { "country", "FR" },
                 { "address", "Rue 1" }
             };
             Console.WriteLine("Updating user " + userId + "...");
-            User user = client.Users.Update(userId, data);
-            Console.WriteLine("     country: " + user.country);
+            client.Users.Update(userId, data);
 
             Console.WriteLine("Deleting user " + userId + "...");
             client.Users.Delete(user.id);

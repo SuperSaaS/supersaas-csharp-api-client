@@ -11,9 +11,5 @@ namespace SuperSaaS.API.Models
         public string title { get; set; }
 
         public Appointment[] appointments { get; set; }
-
-        public Slot()
-        {
-        }
     }
 }
