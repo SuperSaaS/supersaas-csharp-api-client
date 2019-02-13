@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Net;
 using System.Collections.Generic;
 using SuperSaaS.API.Api;
@@ -25,6 +26,7 @@ namespace SuperSaaS.API
         public Users Users { get; set; }        
 
         HttpWebRequest LastRequest;
+        string LocationHeader;
 
         public Client(Configuration configuration = null)
         {
@@ -58,19 +60,33 @@ namespace SuperSaaS.API
         }
         public T Post<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null)
         {
-            return this.Request<T>(HttpMethod.POST, path, postData);
+            return this.Request<T>(HttpMethod.POST, path, postData, queryData);
         }
         public T Put<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null)
         {
-            return this.Request<T>(HttpMethod.PUT, path, postData);
+            return this.Request<T>(HttpMethod.PUT, path, postData, queryData);
         }
         public T Delete<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null) {
-            return this.Request<T>(HttpMethod.DELETE, path, postData);
+            return this.Request<T>(HttpMethod.DELETE, path, postData, queryData);
+        }
+
+        public int GetResourceIdFromHeader()
+        {
+            if (string.IsNullOrEmpty(LocationHeader))
+            {
+                return 0;
+            }
+            else
+            {
+                var match = Regex.Match(LocationHeader, @"/(\d*?)(\.json)?$");
+                string value = match.Groups[1].Value;
+                return Int32.Parse(value);
+            }
         }
 
         private T Request<T>(string httpMethod, string path, NestedJsonArgs postData = null, JsonArgs queryData = null)
         {
-            string url = this.Host + "/api/" + path + ".json" + this.dictionaryToQuerystring(queryData);
+            string url = this.Host + "/api" + path + ".json" + this.dictionaryToQuerystring(queryData);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 
             request.Method = httpMethod;
@@ -113,6 +129,7 @@ namespace SuperSaaS.API
                             {
                                 body = streamIn.ReadToEnd();
                                 streamIn.Close();
+                                LocationHeader = response.Headers[HttpResponseHeader.Location];
                             }
                             stream.Close();
                         }
@@ -152,6 +169,7 @@ namespace SuperSaaS.API
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
                 T result = JsonConvert.DeserializeObject<T>(body, settings);
+
                 return result;
             } else {
                 return default(T);

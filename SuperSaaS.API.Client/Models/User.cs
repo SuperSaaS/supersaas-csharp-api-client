@@ -6,7 +6,7 @@ namespace SuperSaaS.API.Models
         public string address { get; set; }
         public string country { get; set; }
         public DateTime created_on { get; set; }
-        public int credit { get; set; }
+        public string credit { get; set; }
         public string email { get; set; }
         public string field_1 { get; set; }
         public string field_2 { get; set; }
