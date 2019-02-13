@@ -10,7 +10,7 @@ namespace Examples
     {
         private const string HOST = "";
         private const string ACCOUNT = "";
-        private const string PASSWORD = "";
+        private const string API_KEY = "";
         private const int CAPACITY_SCHEDULE_ID = 0;
         private const int CAPACITY_SLOT_ID = 0;
         private const int RESOURCE_SCHEDULE_ID = 0;
@@ -24,7 +24,7 @@ namespace Examples
         {
             Console.WriteLine("SuperSaaS Schedules Example");
 
-            client = new Client(ACCOUNT, PASSWORD, HOST);
+            client = new Client(ACCOUNT, API_KEY, HOST);
 
             try
             {
