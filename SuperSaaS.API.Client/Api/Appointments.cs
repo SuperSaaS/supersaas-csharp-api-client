@@ -107,7 +107,7 @@ namespace SuperSaaS.API.Api
             }
             NestedJsonArgs data = new NestedJsonArgs
             {
-                { "appointment", appointmentData }
+                { "booking", appointmentData }
             };
             JsonArgs query = new JsonArgs { 
                 { "schedule_id", scheduleId.ToString() },
@@ -121,7 +121,14 @@ namespace SuperSaaS.API.Api
             {
                 query.Add("form", "true");
             }
-            return this.Client.Post<Appointment>(path, data, query);
+            Client.Post<Appointment>(path, data, query);
+            Appointment model = new Appointment();
+            int id = Client.GetResourceIdFromHeader();
+            if (id > 0)
+            {
+                model.id = id;
+            }
+            return model;
         }
 
         public Appointment Update(int scheduleId, int appointmentId, Dictionary<string, string> attributes, bool form = false, bool webhook = false)
@@ -134,7 +141,7 @@ namespace SuperSaaS.API.Api
             }
             NestedJsonArgs data = new NestedJsonArgs
             {
-                { "appointment", appointmentData }
+                { "booking", appointmentData }
             };
             JsonArgs query = new JsonArgs {
                 { "schedule_id", scheduleId.ToString() }

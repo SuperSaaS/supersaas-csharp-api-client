@@ -17,5 +17,6 @@ namespace SuperSaaS.API
         T Post<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null);
         T Put<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null);
         T Delete<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null);
+        int GetResourceIdFromHeader();
     }
 }

@@ -41,7 +41,7 @@ namespace SuperSaaS.API.Api
             return this.Get(userId.ToString());
         }
 
-        public User Create(Dictionary<string, string> attributes, string userId = null, bool webhook = false)
+        public void Create(Dictionary<string, string> attributes, string userId = null, bool webhook = false)
         {
             string path = "/users";
             if (userId != null) {
@@ -62,7 +62,7 @@ namespace SuperSaaS.API.Api
                     { "webhook", "true" }
                 };
             }
-            return this.Client.Post<User>(path, data, query);
+            this.Client.Post<User>(path, data, query);
         }
 
         public User Update(int userId, Dictionary<string, string> attributes, bool webhook = false)
