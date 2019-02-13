@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using SuperSaaS.API;
 using SuperSaaS.API.Models;
@@ -14,8 +15,10 @@ namespace Examples
         private const int CAPACITY_SLOT_ID = 0;
         private const int RESOURCE_SCHEDULE_ID = 0;
         private const int SERVICE_SCHEDULE_ID = 0;
+        private const int USER_ID = 5671892;
 
         private static Client client;
+        private static Random random = new Random();
 
         public static void Main(string[] args)
         {
@@ -27,13 +30,15 @@ namespace Examples
             {
                 listSchedulesAndResources();
                 listUsers();
-                int userId = createUser();
+                createUser();
 
-                createUpdateDeleteBooking(userId);
-                createUpdateDeleteReservation(userId);
-                createUpdateDeleteAppointment(userId);
-
-                updateDeleteUser(userId);
+                if (USER_ID > 0)
+                {
+                    createUpdateDeleteBooking(USER_ID);
+                    createUpdateDeleteReservation(USER_ID);
+                    createUpdateDeleteAppointment(USER_ID);
+                    //updateDeleteUser(USER_ID);
+                }
             } catch (SSSException e)
             {
                 Console.WriteLine("Error!");
@@ -120,22 +125,21 @@ namespace Examples
             User[] users = client.Users.List(true, 25);
             for (int i = 0; i < users.Length; i++)
             {
-                Console.WriteLine(i.ToString() + " " + users[i].name);
+                Console.WriteLine(i.ToString() + " " + users[i].name + " (" + users[i].id + ")");
             }
         }
 
-        private static int createUser()
+        private static void createUser()
         {
             var data = new Dictionary<string, string>
             {
                 { "full_name", "Example" },
-                { "name", "example@example.com" },
-                { "email", "example@example.com" },
+                { "name", RandomString(12) + "@example.com" },
+                { "email", RandomString(12) + "@example.com" },
                 { "password", "example" }
             };
             Console.WriteLine("creating new user...");
-            User user = client.Users.Create(data);
-            return user.id;
+            client.Users.Create(data);
 
         }
 
@@ -152,6 +156,12 @@ namespace Examples
 
             Console.WriteLine("Deleting user " + userId + "...");
             client.Users.Delete(user.id);
+        }
+
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }
