@@ -11,7 +11,7 @@ namespace SuperSaaS.API
 {
     public class Client : IClient
     {
-        public const string API_VERSION = "1";
+        public const string API_VERSION = "2";
         public const string VERSION = "0.9.0";
         public const int TIMEOUT_SECONDS = 10 * 1000;
 
