@@ -13,7 +13,7 @@ namespace SuperSaaS.API.Tests
         {
             Configuration config = new Configuration();
             config.AccountName = "accnt";
-            config.Password = "pwd";
+            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
             config.Test = true;
 
             this.Client = new Client(config);

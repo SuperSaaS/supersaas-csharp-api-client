@@ -11,12 +11,12 @@ namespace SuperSaaS.API
 {
     public class Client : IClient
     {
-        public const string API_VERSION = "1";
+        public const string API_VERSION = "2";
         public const string VERSION = "0.9.0";
         public const int TIMEOUT_SECONDS = 10 * 1000;
 
         public string AccountName { get; set; }
-        public string Password { get; set; }
+        public string ApiKey { get; set; }
         public string Host { get; set; }
         public bool Test { get; set; }
 
@@ -32,16 +32,16 @@ namespace SuperSaaS.API
         {
             configuration = configuration ?? new Configuration();
             this.AccountName = configuration.AccountName;
-            this.Password = configuration.Password;
+            this.ApiKey = configuration.ApiKey;
             this.Host = configuration.Host;
             this.Test = configuration.Test;
             this.Init();
         }
 
-        public Client(string accountName, string password, string host = null, bool test = false) 
+        public Client(string accountName, string key, string host = null, bool test = false) 
         {
             this.AccountName = accountName;
-            this.Password = password;
+            this.ApiKey = key;
             this.Host = host ?? Configuration.DEFAULT_HOST;
             this.Test = test;
             this.Init();
@@ -178,7 +178,7 @@ namespace SuperSaaS.API
 
         private string basicAuth()
         {
-            string auth = this.AccountName + ":" + this.Password;
+            string auth = this.AccountName + ":" + this.ApiKey;
             auth = Convert.ToBase64String(Encoding.Default.GetBytes(auth));
             return "Basic " + auth;
         }

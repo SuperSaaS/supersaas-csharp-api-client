@@ -7,7 +7,7 @@ The SuperSaaS API provides services that can be used to add online booking and s
 ## Prerequisites
 
 1. [Register for a (free) SuperSaaS account](https://www.supersaas.com/accounts/new), and
-2. get your account name and password.
+2. get your account name and generate an API key on the [Account Info](https://www.supersaas.com/accounts/edit) page.
 
 ##### Dependencies
 
@@ -28,18 +28,18 @@ Initialize the SuperSaaS `Client` with authorization credentials:
     using SuperSaaS.API.Client;
     Client client = new Client("accnt", "pwd", "usr");
     client.AccountName; //=> 'accnt'
-    client.Password; //=> 'pwd'
+    client.ApiKey; //=> 'xxxxxxxxxxxxxxxxxxxxxx'
 
-If the client isn't configured explicitly, it will use default `ENV` variables for the account name and password.
+If the client isn't configured explicitly, it will use default `ENV` variables for the account name and API key.
 Set these `ENV` variables before calling the client. 
 
     ENV['SSS_API_ACCOUNT_NAME'] = 'accnt'
-    ENV['SSS_API_PASSWORD'] = 'pwd' 
+    ENV['SSS_API_KEY'] = 'xxxxxxxxxxxxxxxxxxxxxx' 
 
     using SuperSaaS.API.Client;
     Client client = new Client()
     client.AccountName; //=> 'accnt'
-    client.Password; //=> 'pwd'
+    client.ApiKey; //=> 'xxxxxxxxxxxxxxxxxxxxxx'
 
 ## API Methods
 
@@ -192,7 +192,7 @@ Get a single form by `form_id`:
 
 The Examples project contains a configurable app demonstrating how to use the API Client for common requests.
 
-The examples will require your account name, password, and some of the examples a schedule id and/or user id and/or form id.
+The examples will require your account name, api key, and some of the examples will require a schedule id and/or user id and/or form id.
 
 IMPORTANT: some of the example API requests are destructive or may incur a cost, such as deleting or adding appointments, respectively.
 
