@@ -11,9 +11,13 @@ namespace SuperSaaS.API
 {
     public class Client : IClient
     {
-        public const string API_VERSION = "2";
-        public const string VERSION = "1.0.1";
+        public const string API_VERSION = "3";
+        public const string VERSION = "2.0.0";
         public const int TIMEOUT_SECONDS = 10 * 1000;
+
+        private DateTime _lastRequestTime = DateTime.MinValue;
+        private readonly object _lockObject = new object();
+        private readonly TimeSpan _minRequestInterval = TimeSpan.FromSeconds(1);
 
         public string AccountName { get; set; }
         public string ApiKey { get; set; }
@@ -23,7 +27,9 @@ namespace SuperSaaS.API
         public Appointments Appointments { get; set; }
         public Forms Forms { get; set; }
         public Schedules Schedules { get; set; }
-        public Users Users { get; set; }        
+        public Users Users { get; set; }
+        public Group Groups { get; set; }
+        public Promotion Promotions { get; set; }    
 
         HttpWebRequest LastRequest;
         string LocationHeader;
@@ -52,6 +58,8 @@ namespace SuperSaaS.API
             this.Forms = new Forms(this);
             this.Schedules = new Schedules(this);
             this.Users = new Users(this);
+            this.Promotions = new Promotions(this);
+            this.Groups = new Groups(this);s
         }
 
         public T Get<T>(string path, JsonArgs queryData = null)
@@ -84,8 +92,22 @@ namespace SuperSaaS.API
             }
         }
 
+        private void ApplyRateLimit()
+        {
+            lock (_lockObject)
+            {
+                var waitTime = _minRequestInterval - (DateTime.Now - _lastRequestTime);
+                if (waitTime > TimeSpan.Zero)
+                {
+                    Thread.Sleep(waitTime);
+                }
+                _lastRequestTime = DateTime.Now;
+            }
+        }
+
         private T Request<T>(string httpMethod, string path, NestedJsonArgs postData = null, JsonArgs queryData = null)
         {
+            ApplyRateLimit()
             string url = this.Host + "/api" + path + ".json" + this.dictionaryToQuerystring(queryData);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 

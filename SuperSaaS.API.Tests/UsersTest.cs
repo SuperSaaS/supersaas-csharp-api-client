@@ -74,8 +74,8 @@ namespace SuperSaaS.API.Tests
                 {"field_1", "f 1"},
                 {"field_2", "f 2"},
                 {"super_field", "sf"},
-                {"credit", "10"},
-                {"role", "3"}
+                {"credit", 10},
+                {"role", 3}
             };
         }
     }
