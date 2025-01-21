@@ -155,7 +155,7 @@ namespace Examples
             Console.WriteLine("listing slots changes...");
             if (CAPACITY_SCHEDULE_ID > 0)
             {
-                Changes changes = client.Appointments.ChangesSlots(CAPACITY_SCHEDULE_ID, DateTime.Now.AddDays(-30));
+                Changes changes = client.Appointments.Changes(CAPACITY_SCHEDULE_ID, DateTime.Now.AddDays(-30));
                 for (int i = 0; i < changes.slots.Length; i++)
                 {
                     Console.WriteLine(" " + changes.slots[i].id);

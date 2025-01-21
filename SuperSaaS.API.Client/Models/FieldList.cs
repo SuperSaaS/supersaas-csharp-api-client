@@ -1,36 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.;
+using System.Text.Json;
 
 namespace SuperSaaS.API.Models
 {
     public class FieldList : BaseModel
     {
-        public string name { get; set; }
-        public string type { get; set; }
-        public string label { get; set; }
+        public string? name { get; set; }
+        public string? type { get; set; }
+        public string? label { get; set; }
         public bool advanced { get; set; }
-
-        // Backing field for Spec
-        private object _spec;
-
-        // Property with custom getter and setter for Spec
-        public object spec
+        private object? _spec;
+        public object? spec
         {
             get => _spec;
             set
             {
-                // If the value is an array (in C#, a List<object>), parse each element as JSON
-                // Otherwise, assign the value directly
                 if (value is List<object> list)
                 {
                     var tempList = new List<object>();
                     foreach (var item in list)
                     {
-                        // Assuming each item in the list is a JSON string that needs to be parsed
-                        // Newtonsoft.Json library is used for parsing
-                        tempList.Add(JsonSerializer.Deserialize<object>(item.ToString()));
-
+                        if (item?.ToString() is string str)
+                        {
+                            var deserialized = JsonSerializer.Deserialize<object>(str);
+                            if (deserialized != null)
+                            {
+                                tempList.Add(deserialized);
+                            }
+                        }
                     }
                     _spec = tempList;
                 }
@@ -43,6 +41,22 @@ namespace SuperSaaS.API.Models
 
         public FieldList()
         {
+            name = string.Empty;
+            type = string.Empty;
+            label = string.Empty;
+            advanced = false;
+            _spec = null;
+        }
+
+        public static FieldList FromDictionary(Dictionary<string, object> dict)
+        {
+            var field = new FieldList();
+            if (dict.ContainsKey("name")) field.name = dict["name"]?.ToString();
+            if (dict.ContainsKey("type")) field.type = dict["type"]?.ToString();
+            if (dict.ContainsKey("label")) field.label = dict["label"]?.ToString();
+            if (dict.ContainsKey("advanced") && dict["advanced"] is bool adv) field.advanced = adv;
+            if (dict.ContainsKey("spec")) field.spec = dict["spec"];
+            return field;
         }
     }
 }

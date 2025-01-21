@@ -1,50 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace SuperSaaS.API.Models
 {
     public class User : BaseModel
     {
         public static readonly int[] ROLES = new int[] { 3, 4, -1 };
 
-        public string password { get; set; }
-        public string full_name { get; set; }
-        public string timezone { get; set; }
-        public string address { get; set; }
-        public string country { get; set; }
-        public DateTime created_on { get; set; }
-        public DateTime updated_on { get; set; }
-        public int credit { get; set; }
-        public string email { get; set; }
-        public string field_1 { get; set; }
-        public string field_2 { get; set; }
-        public int fk { get; set; }
-        public string full_name { get; set; }
-        public int id { get; set; }
-        public string mobile { get; set; }
-        public string name { get; set; }
-        public string phone { get; set; }
-        public int role { get; set; }
-        public string super_field { get; set; }
-        public bool? webhook { get; set; }
-        public Group group { get; set; }
+        public string password { get; set; } = string.Empty;
+        public string full_name { get; set; } = string.Empty;
+        public string timezone { get; set; } = string.Empty;
+        public string address { get; set; } = string.Empty;
+        public string country { get; set; } = string.Empty;
+        public DateTime created_on { get; set; } = DateTime.MinValue;
+        public DateTime updated_on { get; set; } = DateTime.MinValue;
+        public int credit { get; set; } = 0;
+        public string email { get; set; } = string.Empty;
+        public string field_1 { get; set; } = string.Empty;
+        public string field_2 { get; set; } = string.Empty;
+        public int fk { get; set; } = 0;
+        public int id { get; set; } = 0;
+        public string mobile { get; set; } = string.Empty;
+        public string name { get; set; } = string.Empty;
+        public string phone { get; set; } = string.Empty;
 
-        private Form _form;
-        public Form form 
+        public int role { get; set; } = 3;
+
+        public string super_field { get; set; } = string.Empty;
+        public bool? webhook { get; set; } = null;
+
+        public Group group { get; set; } = new Group();
+
+        private Form _form = new Form();
+        public Form form
         {
             get => _form;
-            set 
+            set
             {
-                if (value is Dictionary<string, object> dict)
-                {
-                    _form = new Form(dict);
-                }
-                else
-                {
-                    _form = value;
-                }
+                _form = value ?? new Form();
             }
         }
-
-
 
         public User()
         {

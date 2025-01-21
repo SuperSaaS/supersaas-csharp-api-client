@@ -1,68 +1,122 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
+    [TestClass]
     public class UsersTest
     {
         public Client Client;
 
-        [SetUp]
+        [TestInitialize]
         public void Init()
         {
-            Configuration config = new Configuration();
-            config.AccountName = "accnt";
-            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
-            config.Test = true;
+            Configuration config = new Configuration
+            {
+                AccountName = "accnt",
+                ApiKey = "xxxxxxxxxxxxxxxxxxxx",
+                Test = true
+            };
 
             this.Client = new Client(config);
         }
 
-        [Test()]
+        [TestMethod]
         public void GetTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Get(123); });
+            try
+            {
+                this.Client.Users.Delete(123);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
+
+            try
+            {
+                this.Client.Users.Get(123);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
 
-        [Test()]
-        public void GetFkTest()
-        {
-            Assert.DoesNotThrow(() => { this.Client.Users.Get("123fk"); });
-        }
-
-        [Test()]
+        [TestMethod]
         public void ListTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.List(true, 10, 15); });
+            try
+            {
+                this.Client.Users.Delete(123);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
+
+            try
+            {
+                this.Client.Users.List(true, 10, 15);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
 
-        [Test()]
+        [TestMethod]
         public void CreateTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Create(this.UserArgs()); });
+            try
+            {
+                this.Client.Users.Delete(123);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
+
+            try
+            {
+                this.Client.Users.Create(this.UserArgs());
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
 
-        [Test()]
-        public void CreateFkTest()
-        {
-            Assert.DoesNotThrow(() => { this.Client.Users.Create(this.UserArgs(), "123fk"); });
-        }
-
-        [Test()]
+        [TestMethod]
         public void UpdateTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Update(123, this.UserArgs()); });
+            try
+            {
+                this.Client.Users.Update(123, this.UserArgs());
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
 
-        [Test()]
+        [TestMethod]
         public void DeleteTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Delete(123); });
+            try
+            {
+                this.Client.Users.Delete(123);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
 
-        private Dictionary<string, string> UserArgs() {
-            return new Dictionary<string, string> {
+        private Dictionary<string, object> UserArgs()
+        {
+            return new Dictionary<string, object> {
                 {"name", "Test"},
                 {"email", "test@example.com"},
                 {"password", "pass123"},

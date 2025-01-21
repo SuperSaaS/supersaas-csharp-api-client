@@ -1,34 +1,63 @@
 ﻿using System;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SuperSaaS.API;
+using SuperSaaS.API.Models;
+
+#nullable enable
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
+    [TestClass]
     public class FormsTest
     {
-        public Client Client;
+        private Client? Client { get; set; }
+        private readonly int formId = 123;
+        private readonly int templateFormId = 456;
+        private readonly string userId = "789";
+        private readonly DateTime testTime = new DateTime(2025, 1, 1, 12, 0, 0);
 
-        [SetUp]
+        [TestInitialize]
         public void Init()
         {
-            Configuration config = new Configuration();
-            config.AccountName = "accnt";
-            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
-            config.Test = true;
-
-            this.Client = new Client(config);
+            Configuration config = new Configuration
+            {
+                AccountName = "accnt",
+                ApiKey = "xxxxxxxxxxxxxxxxxxxx",
+                Test = true
+            };
+            Client = new Client(config);
         }
 
-        [Test()]
+        [TestMethod]
         public void GetTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Forms.Get(123); });
+            var form = Client!.Forms.Get(formId);
+            Assert.IsInstanceOfType(form, typeof(Form));
         }
 
-        [Test()]
+        [TestMethod]
         public void ListTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Forms.List(123, DateTime.Now); });
+            var forms = Client!.Forms.List(
+                templateFormId: templateFormId,
+                fromTime: testTime,
+                user: userId,
+                limit: 10,
+                offset: 0
+            );
+            Assert.IsNotNull(forms);
+            Assert.IsInstanceOfType(forms, typeof(Form[]));
+            Assert.AreEqual(0, forms.Length);
+        }
+
+        [TestMethod]
+        public void GetFormsTest()
+        {
+            var forms = Client!.Forms.GetForms();
+            Assert.IsNotNull(forms);
+            Assert.IsInstanceOfType(forms, typeof(SuperForm[]));
+            Assert.AreEqual(0, forms.Length);
+
         }
     }
 }

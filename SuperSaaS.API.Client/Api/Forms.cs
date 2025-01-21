@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SuperSaaS.API.Models;
 
+#nullable enable
+
 namespace SuperSaaS.API.Api
 {
     public class Forms : BaseApi
@@ -10,31 +12,46 @@ namespace SuperSaaS.API.Api
         {
         }
 
-        public Form[] List(int formId) {
-            return this.List(formId, DateTime.MinValue);
-        }
-
-        public Form[] List(int formId, DateTime fromTime)
+        public Form[] List(
+            int templateFormId, 
+            DateTime? fromTime = null, 
+            string? user = null, 
+            int? limit = null, 
+            int? offset = null)
         {
             string path = "/forms";
-            JsonArgs data = new JsonArgs
+            var data = new JsonArgs
             {
-                { "form_id", formId.ToString() }
+                { "form_id", ValidateId(templateFormId).ToString() }
             };
-            if (fromTime > DateTime.MinValue) {
-                data.Add("from", fromTime.ToString("yyyy-MM-dd HH:mm:ss"));
+
+            if (fromTime.HasValue) data.Add("from", ValidateDateTime(fromTime.Value));
+            if (!string.IsNullOrEmpty(user))
+            {
+                var validated = ValidateUser(user);
+                string safeValue = validated?.ToString() ?? "";
+                data.Add("user", safeValue);
             }
-            return this.Client.Get<Form[]>(path, data);
+            if (limit.HasValue) data.Add("limit", ValidateNumber(limit.Value).ToString());
+            if (offset.HasValue) data.Add("offset", ValidateNumber(offset.Value).ToString());
+            return this.Client.Get<Form[]>(path, data) ?? Array.Empty<Form>();;
         }
 
         public Form Get(int formId)
         {
             string path = "/forms";
-            JsonArgs data = new JsonArgs
+            var data = new JsonArgs
             {
-                { "id", formId.ToString() }
+                { "id", ValidateId(formId).ToString() }
             };
-            return this.Client.Get<Form>(path, data);
+
+            return this.Client.Get<Form>(path, data) ?? new Form();
+        }
+
+        public SuperForm[] GetForms()
+        {
+            string path = "/super_forms";
+            return this.Client.Get<SuperForm[]>(path, new JsonArgs()) ?? Array.Empty<SuperForm>();
         }
     }
 }

@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
+    [TestClass]
     public class SchedulesTest
     {
         public Client Client;
 
-        [SetUp]
+        [TestInitialize]
         public void Init()
         {
             Configuration config = new Configuration();
@@ -20,16 +20,30 @@ namespace SuperSaaS.API.Tests
             this.Client = new Client(config);
         }
 
-        [Test()]
+        [TestMethod]
         public void ListTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Schedules.List(); });
+            try
+            {
+                this.Client.Schedules.List();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
 
-        [Test()]
+        [TestMethod]
         public void ResourcesTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Schedules.Resources(12345); });
+            try
+            {
+                this.Client.Schedules.Resources(12345);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Expected no exception, but got: {ex.Message}");
+            }
         }
     }
 }

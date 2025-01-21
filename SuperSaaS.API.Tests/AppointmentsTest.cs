@@ -1,102 +1,213 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using NUnit.Framework;
+using SuperSaaS.API;
+using SuperSaaS.API.Models;
+
+#nullable enable
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
+    [TestClass]
     public class AppointmentsTest
     {
-        public Client Client;
+        private Client? Client { get; set; }
+        private readonly int scheduleId = 123;
+        private readonly int appointmentId = 456;
+        private readonly string userId = "789";
+        private readonly DateTime testTime = new DateTime(2025, 1, 1, 12, 0, 0);
 
-        [SetUp]
+        [TestInitialize]
         public void Init()
         {
-            Configuration config = new Configuration();
-            config.AccountName = "accnt";
-            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
-            config.Test = true;
-
-            this.Client = new Client(config);
+            Configuration config = new Configuration
+            {
+                AccountName = "accnt",
+                ApiKey = "xxxxxxxxxxxxxxxxxxxx",
+                Test = true
+            };
+            Client = new Client(config);
         }
 
-        [Test()]
+        [TestMethod]
         public void GetTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Get(123, 456); });
+            var appointment = Client!.Appointments.Get(scheduleId, appointmentId);
+            Assert.IsNotNull(appointment);
+            Assert.IsInstanceOfType(appointment, typeof(Appointment));
         }
 
-        [Test()]
+        [TestMethod]
         public void ListTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.List(123, true, DateTime.Now, 10); });
+            var appointments = Client!.Appointments.List(
+                scheduleId: scheduleId,
+                form: true,
+                startTime: testTime,
+                finish: testTime.AddHours(1),
+                limit: 10
+            );
+
+            Assert.IsNotNull(appointments);
+            Assert.IsInstanceOfType(appointments, typeof(Appointment[]));
         }
 
-        [Test()]
+        [TestMethod]
         public void CreateTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Create(123, 789, this.AppointmentArgs()); });
+            var attributes = AppointmentArgs();
+            var appointment = Client!.Appointments.Create(
+                scheduleId: scheduleId, 
+                userId: userId, 
+                attributes: attributes,
+                form: true,
+                webhook: true
+            );
+            Assert.IsNotNull(appointment);
+            Assert.IsInstanceOfType(appointment, typeof(Appointment));
         }
 
-        [Test()]
+        [TestMethod]
         public void UpdateTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Update(123, 456, this.AppointmentArgs()); });
+            var attributes = AppointmentArgs();
+            var appointment = Client!.Appointments.Update(
+                scheduleId: scheduleId, 
+                appointmentId: appointmentId, 
+                attributes: attributes,
+                form: true,
+                webhook: true
+            );
+            Assert.IsNotNull(appointment);
+            Assert.IsInstanceOfType(appointment, typeof(Appointment));
         }
 
-        [Test()]
+        [TestMethod]
         public void DeleteTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Delete(123, 456); });
+            Client!.Appointments.Delete(
+                scheduleId: scheduleId, 
+                appointmentId: appointmentId,
+                webhook: true
+            );
         }
 
-        [Test()]
+        [TestMethod]
         public void AgendaTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Agenda(123, 456, DateTime.Now); });
+            var appointments = Client!.Appointments.Agenda(
+                scheduleId: scheduleId, 
+                user: userId, 
+                fromTime: testTime, 
+                slot: true
+            );
+            Assert.IsNotNull(appointments);
+            Assert.IsInstanceOfType(appointments, typeof(Appointment[]));
         }
 
-        [Test()]
-        public void AgendaSlotsTest()
-        {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.AgendaSlots(123, 456, DateTime.Now); });
-        }
-
-        [Test()]
+        [TestMethod]
         public void AvailableTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Available(123, DateTime.Now); });
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Available(123, DateTime.Now, 10, "Test Resource", true, 15); });
+
+            var appointments1 = Client!.Appointments.Available(
+                scheduleId: scheduleId, 
+                fromTime: testTime
+            );
+            Assert.IsNotNull(appointments1);
+            Assert.IsInstanceOfType(appointments1, typeof(Appointment[]));
+
+            var appointments2 = Client.Appointments.Available(
+                scheduleId: scheduleId, 
+                fromTime: testTime, 
+                lengthMinutes: 10, 
+                resource: "Test Resource", 
+                full: true, 
+                limit: 15
+            );
+            Assert.IsNotNull(appointments2);
+            Assert.IsInstanceOfType(appointments2, typeof(Appointment[]));
         }
 
-        [Test()]
+        [TestMethod]
         public void ChangesTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.Changes(123, DateTime.Now); });
+            var changes = Client!.Appointments.Changes(
+                scheduleId: scheduleId,
+                fromTime: testTime,
+                to: testTime.AddDays(1),
+                slot: true,
+                user: userId,
+                limit: 10,
+                offset: 0
+            );
+            Assert.IsNotNull(changes);
+            Assert.IsInstanceOfType(changes, typeof(Changes));
         }
 
-        [Test()]
-        public void ChangesSlotsTest()
+        [TestMethod]
+        public void RangeTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Appointments.ChangesSlots(123, DateTime.Now); });
-        }
+            var appointments = Client!.Appointments.Range(
+                scheduleId: scheduleId,
+                today: true,
+                fromTime: testTime,
+                to: testTime.AddDays(1),
+                slot: true,
+                user: userId,
+                resourceId: 1,
+                serviceId: 1,
+                limit: 10,
+                offset: 0
+            );
 
-        private Dictionary<string, string> AppointmentArgs()
+            Assert.IsNotNull(appointments);
+            Assert.IsInstanceOfType(appointments, typeof(Appointment[]));
+        }
+        private static Dictionary<string, string> AppointmentArgs()
         {
-            return new Dictionary<string, string> {
-                {"description", "Testing"},
-                {"name", "Test"},
-                {"email", "test@example.com"},
-                {"full_name", "Tester Test"},
+            var testTime = new DateTime(2025, 1, 1, 12, 0, 0);
+
+            return new Dictionary<string, string>
+            {
                 {"address", "123 St, City"},
-                {"mobile", "555-5555"},
-                {"phone", "555-5555"},
                 {"country", "FR"},
+                {"created_by", "test_user"},
+                {"description", "Testing"},
+                {"email", "test@example.com"},
                 {"field_1", "f 1"},
                 {"field_2", "f 2"},
                 {"field_1_r", "f 1 r"},
                 {"field_2_r", "f 2 r"},
-                {"super_field", "sf"}
+                {"finish", testTime.AddHours(1).ToString("yyyy-MM-dd HH:mm:ss")},
+                {"form_id", "1"},
+                {"full_name", "Tester Test"},
+                {"mobile", "555-5555"},
+                {"phone", "555-5555"},
+                {"price", "100.00"},
+                {"price_cents", "10000"},
+                {"quantity", "1"},
+                {"res_name", "Test Resource"},
+                {"resource_id", "1"},
+                {"schedule_id", "123"},
+                {"schedule_name", "Test Schedule"},
+                {"service_id", "1"},
+                {"service_name", "Test Service"},
+                {"slot_id", "1"},
+                {"start", testTime.ToString("yyyy-MM-dd HH:mm:ss")},
+                {"status", "confirmed"},
+                {"status_message", "Booking confirmed"},
+                {"super_field", "sf"},
+                {"updated_by", "test_user"},
+                {"user_id", "789"},
+                {"waitlisted", "false"},
+                {"form", "true"},
+                {"length", "10"},
+                {"limit", "10"},
+                {"maxresults", "15"},
+                {"offset", "0"},
+                {"slot", "true"},
+                {"today", "true"},
+                {"webhook", "true"}
             };
         }
     }
