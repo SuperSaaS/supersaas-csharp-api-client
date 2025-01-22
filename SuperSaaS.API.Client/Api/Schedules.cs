@@ -13,17 +13,27 @@ namespace SuperSaaS.API.Api
         public Schedule[] List()
         {
             string path = "/schedules";
-            return this.Client.Get<Schedule[]>(path);
+            return this.Client.Get<Schedule[]>(path, new JsonArgs());
         }
 
         public Resource[] Resources(int scheduleId)
         {
             string path = "/resources";
-            JsonArgs data = new JsonArgs
+            var data = new JsonArgs
             {
-                { "schedule_id", scheduleId.ToString() }
+                { "schedule_id", ValidateId(scheduleId).ToString() }
             };
             return this.Client.Get<Resource[]>(path, data);
+        }
+
+        public FieldList[] GetFieldList(int scheduleId)
+        {
+            string path = "/field_list";
+            var query = new JsonArgs
+            {
+                { "schedule_id", ValidateId(scheduleId).ToString() }
+            };
+            return this.Client.Get<FieldList[]>(path, query);
         }
     }
 }

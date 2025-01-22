@@ -1,5 +1,7 @@
 # SuperSaaS C# API Client
 
+NOTE Client 2.0.0 update is a major breaking change, so please check the API folder if in doubt the various methods.
+
 Online bookings/appointments/calendars in C# using the SuperSaaS scheduling platform - https://supersaas.com
 
 The SuperSaaS API provides services that can be used to add online booking and scheduling functionality to an existing website or CRM software.
@@ -11,7 +13,7 @@ The SuperSaaS API provides services that can be used to add online booking and s
 
 ##### Dependencies
 
-.NET Framework 3.5 or greater, with NuGet.
+.NET 9 or greater, with NuGet.
 
 Json.NET.
 
@@ -63,7 +65,7 @@ _Note: does not work for capacity type schedules._
 
 #### Create User
 
-Create a user with user attributes params:
+Create a user with user attributes params, if you wish to get the URL of the user id with then call User.location:
 
     client.Users.Create(
         new Dictionary<string, string>
@@ -71,7 +73,7 @@ Create a user with user attributes params:
             { "full_name", "Example Name" },
             { "email", "example@example.com" }
         }
-    ); //=> SuperSaaS.CSharp.Models.User
+    ); //=> User (check for string with url to the user or empty User)
 
 #### Update User
 
@@ -86,13 +88,13 @@ Update a user by `user_id` with user attributes params:
 
 #### Delete User
 
-Delete a single user by `user_id`:
+Delete a single user by `user_id` and if `webhook` is present it will trigger any webhooks connected to the account:
 
     client.Users.Delete(12345);
 
 #### Get User
 
-Get a single user by `user_id`:
+Get a single user by `user_id` with optional `form`:
 
     client.Users.Get(12345); //=> SuperSaaS.CSharp.Models.User
 
@@ -142,21 +144,22 @@ Get a single appointment by `schedule_id` and `appointment_id`:
 
 #### List Appointments/Bookings
 
-Get agenda (upcoming) appointments by `schedule_id` and `user_id`, with `form` and `slot` view params:
+Get agenda (upcoming) appointments by `schedule_id` and `user`, `startTime` and `finish` times with `form` and `slot` view params `List(int scheduleId, bool form, DateTime startTime, int limit = 0, DateTime finish)`:
 
-    client.Appointments.List(12345, 67890, true, true); //=> SuperSaaS.CSharp.Models.Appointment[]
+    client.Appointments.List(12345, "67890"); //=> SuperSaaS.CSharp.Models.Appointment[]
 
 #### Get Agenda
 
-Get agenda (upcoming) appointments by `schedule_id` and `user_id`, with `form` view params:
+Get agenda (upcoming) appointments by `schedule_id` and `user` id or name string, `fromTime` as date you want appointments from, with `slot` view params:
 
-    client.Appointments.Agenda(12345, 67890, true); //=> SuperSaaS.CSharp.Models.Appointment[]
+    client.Appointments.Agenda(12345, "67890", null, true); //=> SuperSaaS.CSharp.Models.Appointment[]
 
-#### Get Agenda Slots
+#### Get range of appointments
 
-Get agenda slots for a capacity schedule by `schedule_id` and `user_id`, with `form` view param:
+Get range of appointments by `schedule_id`, with `today`, `from` time, `to` time and `slot` view params (see [docs](https://www.supersaas.com/info/dev/appointment_api#range)),
+`Range(int scheduleId, bool today = false, DateTime? fromTime = null, DateTime? to = null, bool? slot = false, string? user = null, int? resourceId = null, int? serviceId = null, int? limit = null, int? offset = null)`:
 
-    client.Appointments.AgendaSlots(12345, 67890, true); //=> SuperSaaS.CSharp.Models.Slot[]
+     client.Appointments.Range(12345, false); //=> SuperSaaS.CSharp.Models.Appointment[]
 
 #### Get Available Appointments/Bookings
 
@@ -166,19 +169,13 @@ Get available appointments by `schedule_id`, with `from` time and `length_minute
 
 #### Get Recent Changes
 
-Get recently changed appointments by `schedule_id`, with `from` time:
+Get recently changed appointments by `schedule_id`, with `from` time, `to` time, `slot` boolean to get slot info, `user` to limit to certain user, and the `limit`/`offset` pagination params:
 
-    client.Appointments.Changes(12345, DateTime.Now.AddDays(-7), true); //=> SuperSaaS.CSharp.Models.Appointment[]
-
-#### Get Recent Changes Slots
-
-Get recently changed slots for a capacity schedule by `schedule_id`, with `from` time:
-
-    client.Appointments.ChangesSlots(12345, DateTime.Now.AddDays(-7), true); //=> SuperSaaS.CSharp.Models.Slot[]
+    client.Appointments.Changes(12345, DateTime.Now.AddDays(-7), null, true); //=> SuperSaaS.CSharp.Models.Appointment[]
 
 #### List Template Forms
 
-Get all forms by template `superform_id`, with `from` time param:
+Get all forms by template `superform_id`, with `from` time param and `limit`/`offset` pagination params:
 
     client.Forms.List(12345, DateTime.Now.AddDays(-7)); //=> SuperSaaS.CSharp.Models.Form[]
 
@@ -225,8 +222,6 @@ The headers, body, path, etc. of the last request can be inspected for assertion
 + [PHP API Client](https://github.com/SuperSaaS/supersaas-php-api-client)
 + [NodeJS API Client](https://github.com/SuperSaaS/supersaas-nodejs-api-client)
 + [Ruby API Client](https://github.com/SuperSaaS/supersaas-ruby-api-client)
-+ [Objective-C API Client](https://github.com/SuperSaaS/supersaas-objc-api-client)
-+ [Go API Client](https://github.com/SuperSaaS/supersaas-go-api-client)
 
 Contact: [support@supersaas.com](mailto:support@supersaas.com)
 
