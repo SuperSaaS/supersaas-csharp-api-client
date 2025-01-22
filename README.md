@@ -1,5 +1,7 @@
 # SuperSaaS C# API Client
 
+NOTE Client 2.0.0 update is a major breaking change, so please check the API folder if in doubt the various methods.
+
 Online bookings/appointments/calendars in C# using the SuperSaaS scheduling platform - https://supersaas.com
 
 The SuperSaaS API provides services that can be used to add online booking and scheduling functionality to an existing website or CRM software.
@@ -63,7 +65,7 @@ _Note: does not work for capacity type schedules._
 
 #### Create User
 
-Create a user with user attributes params:
+Create a user with user attributes params, if you wish to get the URL of the user id with then call User.location:
 
     client.Users.Create(
         new Dictionary<string, string>
@@ -71,7 +73,7 @@ Create a user with user attributes params:
             { "full_name", "Example Name" },
             { "email", "example@example.com" }
         }
-    ); //=> object (check for string with url to the user or empty User)
+    ); //=> User (check for string with url to the user or empty User)
 
 #### Update User
 

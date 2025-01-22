@@ -15,6 +15,7 @@ namespace SuperSaaS.API.Models
         public DateTime created_on { get; set; } = DateTime.MinValue;
         public DateTime updated_on { get; set; } = DateTime.MinValue;
         public int credit { get; set; } = 0;
+        public string location { get; set; } = "";
         public string email { get; set; } = string.Empty;
         public string field_1 { get; set; } = string.Empty;
         public string field_2 { get; set; } = string.Empty;

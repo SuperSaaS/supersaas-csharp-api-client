@@ -132,12 +132,11 @@ namespace SuperSaaS.API
             var apiPath = $"/api{path}.json";
             if (queryData?.Any() == true)
             {
-                apiPath += "?" + DictionaryToQuerystring(queryData);
+                apiPath += DictionaryToQuerystring(queryData);
             }
 
             var url = $"{Host}{apiPath}";
             using var request = new HttpRequestMessage(method, url);
-
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Basic", BasicAuth());
             request.Headers.UserAgent.ParseAdd(UserAgent());
@@ -157,42 +156,72 @@ namespace SuperSaaS.API
             try
             {
                 var sendTask = _httpClient.SendAsync(request);
-                sendTask.Wait();
-                var response = sendTask.Result;
+        sendTask.Wait();
+        var response = sendTask.Result;
+        var bodyTask = response.Content.ReadAsStringAsync();
+        bodyTask.Wait();
+        var body = bodyTask.Result;
+        Console.WriteLine($"Response Status: {response.StatusCode}");
+        Console.WriteLine($"Response Body: {body}");
 
-                var bodyTask = response.Content.ReadAsStringAsync();
-                bodyTask.Wait();
-                var body = bodyTask.Result;
+        if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine($"Error Response Body: {body}");
+            Console.WriteLine($"Status Code: {response.StatusCode}");
+            foreach (var header in response.Headers)
+            {
+                Console.WriteLine($"Header {header.Key}: {string.Join(", ", header.Value)}");
+            }
+            throw new SSSException(body ?? $"Error: {response.StatusCode}");
+        }
 
-                if (!response.IsSuccessStatusCode)
-                    throw new SSSException(body);
 
                 LocationHeader = response.Headers.Location?.ToString();
-                Console.WriteLine(LocationHeader);
 
-                if (string.IsNullOrEmpty(body))
-                {
-                    if (typeof(T) == typeof(string))
-                    {
+                T result;
+        if (string.IsNullOrEmpty(body))
+        {
+            if (typeof(T) == typeof(string) && !string.IsNullOrEmpty(LocationHeader))
+            {
+                return (T)(object)LocationHeader;
+            }
+            
+            // Create new instance if body is empty but we have LocationHeader
+            if (!string.IsNullOrEmpty(LocationHeader))
+            {
+                result = Activator.CreateInstance<T>();
+            }
+            else 
+            {
+                return default!;
+            }
+        }
+        else 
+        {
+            result = JsonConvert.DeserializeObject<T>(
+                body,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })!;
+        }
 
-                        Console.WriteLine("23454345kkkkkk");
-                        Console.WriteLine((T)(object)(LocationHeader ?? string.Empty));
+        if ( !string.IsNullOrEmpty(LocationHeader))
+        {
+            var locationType = typeof(T).GetProperty("location");
+            if (locationType != null && locationType.CanWrite)
+            {
+                locationType.SetValue(result, LocationHeader);
+            }
+        }
 
-                        return (T)(object)(LocationHeader ?? string.Empty);
-                    }
-                    return default!;
-                }
-
-                return JsonConvert.DeserializeObject<T>(
-                    body,
-                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })!;
+        return result;
             }
             catch (AggregateException ex)
             {
                 if (ex.InnerException is HttpRequestException httpEx)
                 {
+                    Console.WriteLine("1J A");
                     throw new SSSException($"HTTP Request Error: {httpEx.Message}");
                 }
+                Console.WriteLine("1J B");
                 throw new SSSException($"An error occurred: {ex.InnerException?.Message ?? ex.Message}");
             }
         }

@@ -22,6 +22,7 @@ namespace SuperSaaS.API.Models
         public string? phone { get; set; }
         public string? price { get; set; }
         public string? res_name { get; set; }
+        public string location { get; set; } = "";
         public int resource_id { get; set; }
         public int schedule_id { get; set; }
         public string? schedule_name { get; set; }

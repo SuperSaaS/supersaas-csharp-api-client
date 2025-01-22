@@ -49,7 +49,7 @@ namespace SuperSaaS.API.Api
             return result ?? new User();
         }
 
-        public object Create(
+        public User Create(
             Dictionary<string, object> attributes,
             object? userId = null,
             bool? webhook = null,
@@ -58,7 +58,7 @@ namespace SuperSaaS.API.Api
             string path = GetUserPath(userId);
             var query = new JsonArgs();
 
-            if (webhook == true) query.Add("webhook", "true");
+            if (webhook == true) query.Add("webhook", webhook.Value.ToString().ToLower());
             if (!string.IsNullOrEmpty(duplicate)) query.Add("duplicate", ValidateDuplicate(duplicate));
 
             var userData = new JsonArgs();
@@ -121,14 +121,56 @@ namespace SuperSaaS.API.Api
             bool? webhook = null,
             string? notfound = null)
         {
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+
+            if (userId.ToString().Trim().Length == 0)
+                throw new ArgumentException("userId cannot be empty", nameof(userId));
+
             string path = GetUserPath(userId);
             var query = new JsonArgs();
 
             if (webhook == true) query.Add("webhook", "true");
             if (!string.IsNullOrEmpty(notfound)) query.Add("notfound", ValidateNotfound(notfound));
+            
             var userData = new JsonArgs();
-
-            if (attributes.ContainsKey("name")) userData.Add("name", ValidateName(attributes["name"]?.ToString() ?? ""));
+            if (attributes.ContainsKey("name")) 
+                userData.Add("name", ValidateName(attributes["name"]?.ToString() ?? ""));
+            if (attributes.ContainsKey("email")) 
+                userData.Add("email", attributes["email"]?.ToString() ?? "");
+            if (attributes.ContainsKey("password")) 
+                userData.Add("password", attributes["password"]?.ToString() ?? "");
+            if (attributes.TryGetValue("full_name", out var fullName))
+                userData.Add("full_name", fullName?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("address", out var address))
+                userData.Add("address", address?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("mobile", out var mobile))
+                userData.Add("mobile", mobile?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("phone", out var phone))
+                userData.Add("phone", phone?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("country", out var country))
+                userData.Add("country", country?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("timezone", out var timezone))
+                userData.Add("timezone", timezone?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("field_1", out var field1))
+                userData.Add("field_1", field1?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("field_2", out var field2))
+                userData.Add("field_2", field2?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("super_field", out var superField))
+                userData.Add("super_field", superField?.ToString() ?? string.Empty);
+            if (attributes.TryGetValue("credit", out var credit))
+            {
+                var creditValue = credit?.ToString();
+                if (!string.IsNullOrEmpty(creditValue))
+                    userData.Add("credit", ValidateNumber(int.Parse(creditValue)).ToString());
+            }
+            
+            if (attributes.TryGetValue("group", out var group))
+            {
+                var groupValue = group?.ToString();
+                if (!string.IsNullOrEmpty(groupValue))
+                    userData.Add("group", ValidateNumber(int.Parse(groupValue)).ToString());
+            }
 
             if (attributes.ContainsKey("role"))
             {
