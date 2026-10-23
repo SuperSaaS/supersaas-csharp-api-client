@@ -60,6 +60,7 @@
     <Compile Include="JsonArgs.cs" />
     <Compile Include="NestedJsonArgs.cs" />
     <Compile Include="Api\Schedules.cs" />
+    <Compile Include="Api\Slots.cs" />
     <Compile Include="Models\Schedule.cs" />
     <Compile Include="Models\Resource.cs" />
     <Compile Include="Models\Changes.cs" />
