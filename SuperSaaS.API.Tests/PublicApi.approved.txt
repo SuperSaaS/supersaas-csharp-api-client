@@ -24,6 +24,14 @@ type class SuperSaaS.API.Api.Schedules : SuperSaaS.API.Api.BaseApi
   SuperSaaS.API.Api.Schedules.ctor public SuperSaaS.API.Api.Schedules(SuperSaaS.API.IClient client)
   SuperSaaS.API.Api.Schedules.method public SuperSaaS.API.Models.Resource[] Resources(System.Int32 scheduleId)
   SuperSaaS.API.Api.Schedules.method public SuperSaaS.API.Models.Schedule[] List()
+type class SuperSaaS.API.Api.Slots : SuperSaaS.API.Api.BaseApi
+  SuperSaaS.API.Api.Slots.ctor public SuperSaaS.API.Api.Slots(SuperSaaS.API.IClient client)
+  SuperSaaS.API.Api.Slots.method public SuperSaaS.API.Models.Slot Create(System.Int32 scheduleId, System.Collections.Generic.Dictionary<System.String, System.String> attributes)
+  SuperSaaS.API.Api.Slots.method public SuperSaaS.API.Models.Slot Get(System.Int32 scheduleId, System.Int32 slotId)
+  SuperSaaS.API.Api.Slots.method public SuperSaaS.API.Models.Slot Update(System.Int32 scheduleId, System.Int32 slotId, System.Collections.Generic.Dictionary<System.String, System.String> attributes)
+  SuperSaaS.API.Api.Slots.method public SuperSaaS.API.Models.Slot[] List(System.Int32 scheduleId, System.DateTime startTime, System.DateTime finishTime, System.Int32 limit = 0, System.Int32 offset = 0)
+  SuperSaaS.API.Api.Slots.method public SuperSaaS.API.Models.Slot[] List(System.Int32 scheduleId, System.Int32 limit = 0, System.Int32 offset = 0)
+  SuperSaaS.API.Api.Slots.method public System.Void Delete(System.Int32 scheduleId, System.Int32 slotId)
 type class SuperSaaS.API.Api.Users : SuperSaaS.API.Api.BaseApi
   SuperSaaS.API.Api.Users.ctor public SuperSaaS.API.Api.Users(SuperSaaS.API.IClient client)
   SuperSaaS.API.Api.Users.method public SuperSaaS.API.Models.User Get(System.Int32 userId)
@@ -50,6 +58,7 @@ type class SuperSaaS.API.Client : SuperSaaS.API.IClient
   SuperSaaS.API.Client.property public SuperSaaS.API.Api.Appointments Appointments { public get; public set; }
   SuperSaaS.API.Client.property public SuperSaaS.API.Api.Forms Forms { public get; public set; }
   SuperSaaS.API.Client.property public SuperSaaS.API.Api.Schedules Schedules { public get; public set; }
+  SuperSaaS.API.Client.property public SuperSaaS.API.Api.Slots Slots { public get; public set; }
   SuperSaaS.API.Client.property public SuperSaaS.API.Api.Users Users { public get; public set; }
   SuperSaaS.API.Client.property public System.Boolean Test { public get; public set; }
   SuperSaaS.API.Client.property public System.String AccountName { public get; public set; }
@@ -143,8 +152,11 @@ type class SuperSaaS.API.Models.Slot : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.Slot.property public System.DateTime finish { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.DateTime start { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.String capacity { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.String color { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.String description { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.String location { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.String price { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.String title { public get; public set; }
 type class SuperSaaS.API.Models.User : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.User.ctor public SuperSaaS.API.Models.User()

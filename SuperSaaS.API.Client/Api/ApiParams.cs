@@ -21,6 +21,14 @@ namespace SuperSaaS.API.Api
             return value.ToString(CultureInfo.InvariantCulture);
         }
 
+        internal static JsonArgs ScheduleQuery(int scheduleId)
+        {
+            return new JsonArgs
+            {
+                { "schedule_id", Format(scheduleId) }
+            };
+        }
+
         internal static JsonArgs ToJsonArgs(Dictionary<string, string> attributes)
         {
             var args = new JsonArgs();

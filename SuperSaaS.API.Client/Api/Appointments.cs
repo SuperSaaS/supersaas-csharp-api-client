@@ -86,7 +86,7 @@ namespace SuperSaaS.API.Api
         /// <returns>The appointments.</returns>
         public Appointment[] List(int scheduleId, bool form, DateTime startTime, int limit = 0)
         {
-            JsonArgs data = ScheduleQuery(scheduleId);
+            JsonArgs data = ApiParams.ScheduleQuery(scheduleId);
             if (startTime > DateTime.MinValue)
             {
                 data.Add("from", ApiParams.Format(startTime));
@@ -108,7 +108,8 @@ namespace SuperSaaS.API.Api
         /// <returns>The appointment.</returns>
         public Appointment Get(int scheduleId, int appointmentId)
         {
-            return Client.Get<Appointment>("/bookings/" + ApiParams.Format(appointmentId), ScheduleQuery(scheduleId));
+            return Client.Get<Appointment>("/bookings/" + ApiParams.Format(appointmentId),
+                ApiParams.ScheduleQuery(scheduleId));
         }
 
         /// <summary>Creates an appointment (booking) for a user.</summary>
@@ -127,7 +128,7 @@ namespace SuperSaaS.API.Api
         public Appointment Create(int scheduleId, int userId, Dictionary<string, string> attributes, bool form = false,
             bool webhook = false)
         {
-            JsonArgs query = ScheduleQuery(scheduleId);
+            JsonArgs query = ApiParams.ScheduleQuery(scheduleId);
             query.Add("user_id", ApiParams.Format(userId));
             AddFlags(query, form, webhook);
 
@@ -150,7 +151,7 @@ namespace SuperSaaS.API.Api
         public Appointment Update(int scheduleId, int appointmentId, Dictionary<string, string> attributes,
             bool form = false, bool webhook = false)
         {
-            JsonArgs query = ScheduleQuery(scheduleId);
+            JsonArgs query = ApiParams.ScheduleQuery(scheduleId);
             AddFlags(query, form, webhook);
             return Client.Put<Appointment>("/bookings/" + ApiParams.Format(appointmentId), BookingData(attributes),
                 query);
@@ -161,7 +162,8 @@ namespace SuperSaaS.API.Api
         /// <param name="appointmentId">The id of the appointment.</param>
         public void Delete(int scheduleId, int appointmentId)
         {
-            Client.Delete<Appointment>("/bookings/" + ApiParams.Format(appointmentId), null, ScheduleQuery(scheduleId));
+            Client.Delete<Appointment>("/bookings/" + ApiParams.Format(appointmentId), null,
+                ApiParams.ScheduleQuery(scheduleId));
         }
 
         /// <summary>Gets the appointments of a schedule that changed since <paramref name="fromTime"/>.</summary>
@@ -206,14 +208,6 @@ namespace SuperSaaS.API.Api
                 data.Add("from", ApiParams.Format(fromTime));
             }
             return data;
-        }
-
-        private static JsonArgs ScheduleQuery(int scheduleId)
-        {
-            return new JsonArgs
-            {
-                { "schedule_id", ApiParams.Format(scheduleId) }
-            };
         }
 
         private static NestedJsonArgs BookingData(Dictionary<string, string> attributes)

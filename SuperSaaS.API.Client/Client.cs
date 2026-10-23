@@ -15,7 +15,8 @@ namespace SuperSaaS.API
 {
     /// <summary>
     /// Client for the SuperSaaS API. Holds the account credentials and exposes the API endpoints through
-    /// <see cref="Appointments"/>, <see cref="Forms"/>, <see cref="Schedules"/> and <see cref="Users"/>.
+    /// <see cref="Appointments"/>, <see cref="Forms"/>, <see cref="Schedules"/>, <see cref="Slots"/> and
+    /// <see cref="Users"/>.
     /// </summary>
     public class Client : IClient
     {
@@ -67,6 +68,9 @@ namespace SuperSaaS.API
         /// <summary>Schedule and resource endpoints.</summary>
         public Schedules Schedules { get; set; }
 
+        /// <summary>Slot endpoints for capacity schedules.</summary>
+        public Slots Slots { get; set; }
+
         /// <summary>User endpoints.</summary>
         public Users Users { get; set; }
 
@@ -110,6 +114,7 @@ namespace SuperSaaS.API
             Appointments = new Appointments(this);
             Forms = new Forms(this);
             Schedules = new Schedules(this);
+            Slots = new Slots(this);
             Users = new Users(this);
         }
 
