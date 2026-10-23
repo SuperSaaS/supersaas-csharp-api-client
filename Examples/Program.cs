@@ -40,6 +40,7 @@ namespace Examples
                     updateDeleteUser(USER_ID);
                 }
 
+                createUpdateDeleteSlot();
                 listChanges();
             } catch (SSSException e)
             {
@@ -137,6 +138,37 @@ namespace Examples
             };
             Console.WriteLine("creating new appointment...");
             Appointment appointment = client.Appointments.Create(SERVICE_SCHEDULE_ID, userId, data);
+        }
+
+        private static void createUpdateDeleteSlot()
+        {
+            if (CAPACITY_SCHEDULE_ID == 0) return;
+
+            var data = new Dictionary<string, string>
+            {
+                { "start", DateTime.Now.AddDays(random.Next(1, 90)).ToString("yyyy-MM-dd HH:mm:ss") },
+                { "finish", DateTime.Now.AddDays(100).ToString("yyyy-MM-dd HH:mm:ss") },
+                { "title", "example" },
+                { "capacity", "10" }
+            };
+            Console.WriteLine("creating new slot...");
+            Slot model = client.Slots.Create(CAPACITY_SCHEDULE_ID, data);
+
+            Console.WriteLine("updating slot " + model.id + "...");
+            client.Slots.Update(CAPACITY_SCHEDULE_ID, model.id, new Dictionary<string, string> { { "title", "updated" } });
+
+            Slot slot = client.Slots.Get(CAPACITY_SCHEDULE_ID, model.id);
+            Console.WriteLine("     title: " + slot.title);
+
+            Console.WriteLine("listing slots...");
+            Slot[] slots = client.Slots.List(CAPACITY_SCHEDULE_ID, 10);
+            for (int i = 0; i < slots.Length; i++)
+            {
+                Console.WriteLine(" " + slots[i].id);
+            }
+
+            Console.WriteLine("deleting slot...");
+            client.Slots.Delete(CAPACITY_SCHEDULE_ID, model.id);
         }
 
         private static void listChanges()

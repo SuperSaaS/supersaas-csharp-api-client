@@ -23,6 +23,7 @@ namespace SuperSaaS.API
         public Appointments Appointments { get; set; }
         public Forms Forms { get; set; }
         public Schedules Schedules { get; set; }
+        public Slots Slots { get; set; }
         public Users Users { get; set; }        
 
         HttpWebRequest LastRequest;
@@ -51,6 +52,7 @@ namespace SuperSaaS.API
             this.Appointments = new Appointments(this);
             this.Forms = new Forms(this);
             this.Schedules = new Schedules(this);
+            this.Slots = new Slots(this);
             this.Users = new Users(this);
         }
 

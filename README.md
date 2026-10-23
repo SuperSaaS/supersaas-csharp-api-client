@@ -176,6 +176,51 @@ Get recently changed slots for a capacity schedule by `schedule_id`, with `from`
 
     client.Appointments.ChangesSlots(12345, DateTime.Now.AddDays(-7), true); //=> SuperSaaS.CSharp.Models.Slot[]
 
+#### List Slots
+
+Get slots of a capacity schedule by `schedule_id`, with optional `start`/`finish` time and `limit`/`offset` pagination params (`limit` defaults to 100, max 2500):
+
+    client.Slots.List(12345, DateTime.Now, DateTime.Now.AddDays(7), 10, 0); //=> SuperSaaS.CSharp.Models.Slot[]
+
+#### Get Slot
+
+Get a single slot of a capacity schedule by `schedule_id` and `slot_id`:
+
+    client.Slots.Get(12345, 67890); //=> SuperSaaS.CSharp.Models.Slot
+
+#### Create Slot
+
+Create a slot in a capacity schedule by `schedule_id` with slot attributes (`start`, `finish`, `title`, `description`, `location`, `capacity`, `price`, `color`). A `capacity` of `"-"` or blank is unlimited, `"0"` means no places:
+
+    client.Slots.Create(12345,
+        new Dictionary<string, string>
+        {
+            { "start", "2030-01-01 10:00:00" },
+            { "finish", "2030-01-01 11:00:00" },
+            { "title", "Example" },
+            { "capacity", "10" }
+        }
+    ); //=> SuperSaaS.CSharp.Models.Slot (with only the id set)
+
+#### Update Slot
+
+Update a slot by `schedule_id` and `slot_id` with slot attributes params:
+
+    client.Slots.Update(12345, 67890,
+        new Dictionary<string, string>
+        {
+            { "title", "New Title" }
+        }
+    );
+
+#### Delete Slot
+
+Delete a single slot by `schedule_id` and `slot_id`. This also deletes the bookings on the slot:
+
+    client.Slots.Delete(12345, 67890);
+
+_Note: slots only work for capacity type schedules._
+
 #### List Template Forms
 
 Get all forms by template `superform_id`, with `from` time param:
