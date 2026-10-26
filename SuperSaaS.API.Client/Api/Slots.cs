@@ -83,7 +83,7 @@ namespace SuperSaaS.API.Api
         /// <summary>Updates a slot.</summary>
         /// <param name="scheduleId">The id of the capacity schedule.</param>
         /// <param name="slotId">The id of the slot.</param>
-        /// <param name="attributes">The slot attributes to change.</param>
+        /// <param name="attributes">The slot attributes to change; <c>null</c> values are not sent.</param>
         /// <returns>The API response, if any.</returns>
         public Slot Update(int scheduleId, int slotId, Dictionary<string, string> attributes)
         {
@@ -107,7 +107,7 @@ namespace SuperSaaS.API.Api
         {
             return new NestedJsonArgs
             {
-                { "slot", ApiParams.ToJsonArgs(attributes) }
+                { "slot", ApiParams.ToJsonArgs(attributes, skipNullValues: true) }
             };
         }
     }

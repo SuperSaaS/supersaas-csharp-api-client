@@ -29,11 +29,18 @@ namespace SuperSaaS.API.Api
             };
         }
 
-        internal static JsonArgs ToJsonArgs(Dictionary<string, string> attributes)
+        /// <summary>Copies <paramref name="attributes"/> into request arguments.</summary>
+        /// <param name="attributes">The attributes to send.</param>
+        /// <param name="skipNullValues">Leave out <c>null</c> values (meaning "leave unchanged").</param>
+        internal static JsonArgs ToJsonArgs(Dictionary<string, string> attributes, bool skipNullValues = false)
         {
             var args = new JsonArgs();
             foreach (KeyValuePair<string, string> entry in attributes)
             {
+                if (skipNullValues && entry.Value == null)
+                {
+                    continue;
+                }
                 args.Add(entry.Key, entry.Value);
             }
             return args;

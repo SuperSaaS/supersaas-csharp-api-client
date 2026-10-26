@@ -66,7 +66,7 @@ Details of the data structures, parameters, and values can be found on the devel
 
 https://www.supersaas.com/info/dev
 
-All methods are synchronous. Failed requests throw a `SuperSaaS.API.SSSException`: for errors returned by the API its `Message` is the response body; for network errors and timeouts it is the message of the underlying exception, which is available as `InnerException`.
+All methods are synchronous. Failed requests throw a `SuperSaaS.API.SSSException`: for errors returned by the API its `Message` is the response body, `StatusCode` the HTTP status and `Errors` the parsed `errors` array of the response (`IList<ApiError>` with `Status`, `Title` and `Code`; empty when the body has none). For network errors and timeouts the message is that of the underlying exception, which is available as `InnerException`, and `StatusCode` is `null`.
 
 ```csharp
 try
@@ -76,6 +76,8 @@ try
 catch (SSSException e)
 {
     Console.WriteLine(e.Message);
+    Console.WriteLine(e.StatusCode);      //=> 404
+    Console.WriteLine(e.Errors[0].Title); //=> "Not found"
 }
 ```
 
@@ -293,6 +295,39 @@ client.Slots.Delete(12345, 67890);
 ```
 
 _Note: slots only work for capacity type schedules._
+
+#### Ping
+
+Check that the account name and API key are valid. Returns `true`, or throws an `SSSException` (e.g. on a 401):
+
+```csharp
+client.Ping(); //=> true
+```
+
+#### Create Hook
+
+Subscribe a `targetUrl` to an event. `evt` is the trigger letter (or a word starting with it): `U` user created, `M` user modified, `N` new appointment, `C` changed appointment, `R` reminder, `F` follow-up, `S` form submitted, `O` form changed, `H` mail, `P` credit purchase. `parentId` is the schedule id for N/C/R/F and the super form id for S/O; for U/M/H/P it is ignored but must be given:
+
+```csharp
+client.Hooks.Create("https://example.com/hook", "N", 12345); //=> SuperSaaS.API.Models.Hook (Id, ParentId)
+```
+
+#### Delete Hook
+
+Delete a hook by `hookId` and `parentId`:
+
+```csharp
+client.Hooks.Delete(67890, 12345);
+```
+
+#### Input Field List
+
+Get the fields of the input form for bookings of a schedule. Without a schedule id the user fields are returned:
+
+```csharp
+client.Schedules.InputFieldList(12345); //=> SuperSaaS.API.Models.FieldList[] (Name, Type, Label, Required)
+client.Schedules.InputFieldList();      //=> user fields
+```
 
 #### List Template Forms
 
