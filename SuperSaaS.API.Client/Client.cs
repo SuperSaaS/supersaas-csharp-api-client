@@ -23,6 +23,7 @@ namespace SuperSaaS.API
         public Appointments Appointments { get; set; }
         public Forms Forms { get; set; }
         public Schedules Schedules { get; set; }
+        public Hooks Hooks { get; set; }
         public Slots Slots { get; set; }
         public Users Users { get; set; }        
 
@@ -52,6 +53,7 @@ namespace SuperSaaS.API
             this.Appointments = new Appointments(this);
             this.Forms = new Forms(this);
             this.Schedules = new Schedules(this);
+            this.Hooks = new Hooks(this);
             this.Slots = new Slots(this);
             this.Users = new Users(this);
         }
@@ -70,6 +72,13 @@ namespace SuperSaaS.API
         }
         public T Delete<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null) {
             return this.Request<T>(HttpMethod.DELETE, path, postData, queryData);
+        }
+
+        // Checks the credentials: true when the server answers 204, otherwise throws SSSException.
+        public bool Ping()
+        {
+            this.Get<object>("/ping");
+            return true;
         }
 
         public int GetResourceIdFromHeader()
@@ -143,8 +152,13 @@ namespace SuperSaaS.API
             {
                 if (ex is WebException && ((WebException)ex).Status == WebExceptionStatus.ProtocolError)
                 {
+                    int? statusCode = null;
                     using (WebResponse response = ((WebException)ex).Response)
                     {
+                        if (response is HttpWebResponse)
+                        {
+                            statusCode = (int)((HttpWebResponse)response).StatusCode;
+                        }
                         using (Stream stream = response.GetResponseStream())
                         {
                             if (stream != null)
@@ -158,6 +172,10 @@ namespace SuperSaaS.API
                             }
                         }
                         response.Close();
+                    }
+                    if (statusCode.HasValue)
+                    {
+                        throw new SSSException(body, statusCode.Value, SSSException.ParseErrors(body));
                     }
                     throw new SSSException(body);
                 }

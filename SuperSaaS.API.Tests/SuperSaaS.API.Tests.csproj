@@ -37,6 +37,8 @@
     <Compile Include="UsersTest.cs" />
     <Compile Include="SchedulesTest.cs" />
     <Compile Include="SlotsTest.cs" />
+    <Compile Include="HooksTest.cs" />
+    <Compile Include="SSSExceptionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

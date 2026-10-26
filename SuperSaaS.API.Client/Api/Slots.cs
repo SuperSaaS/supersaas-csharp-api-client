@@ -91,7 +91,11 @@ namespace SuperSaaS.API.Api
             JsonArgs slotData = new JsonArgs { };
             foreach (KeyValuePair<string, string> entry in attributes)
             {
-                slotData.Add(entry.Key, entry.Value);
+                // null means "leave unchanged": never send it
+                if (entry.Value != null)
+                {
+                    slotData.Add(entry.Key, entry.Value);
+                }
             }
             return new NestedJsonArgs
             {

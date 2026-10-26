@@ -61,6 +61,10 @@
     <Compile Include="NestedJsonArgs.cs" />
     <Compile Include="Api\Schedules.cs" />
     <Compile Include="Api\Slots.cs" />
+    <Compile Include="Api\Hooks.cs" />
+    <Compile Include="Models\ApiError.cs" />
+    <Compile Include="Models\Hook.cs" />
+    <Compile Include="Models\FieldList.cs" />
     <Compile Include="Models\Schedule.cs" />
     <Compile Include="Models\Resource.cs" />
     <Compile Include="Models\Changes.cs" />

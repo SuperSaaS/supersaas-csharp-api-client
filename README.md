@@ -221,6 +221,41 @@ Delete a single slot by `schedule_id` and `slot_id`. This also deletes the booki
 
 _Note: slots only work for capacity type schedules._
 
+#### Ping
+
+Check that the account name and API key are valid. Returns `true`, or throws an `SSSException` (e.g. on a 401):
+
+    client.Ping(); //=> true
+
+#### Create Hook
+
+Subscribe a `target_url` to an event. `event` is the trigger letter (or a word starting with it): `U` user created, `M` user modified, `N` new appointment, `C` changed appointment, `R` reminder, `F` follow-up, `S` form submitted, `O` form changed, `H` mail, `P` credit purchase. `parent_id` is the schedule id for N/C/R/F and the super form id for S/O; for U/M/H/P it is ignored but must be given:
+
+    client.Hooks.Create("https://example.com/hook", "N", 12345); //=> SuperSaaS.API.Models.Hook (Id, ParentId)
+
+#### Delete Hook
+
+Delete a hook by `hook_id` and `parent_id`:
+
+    client.Hooks.Delete(67890, 12345);
+
+#### Input Field List
+
+Get the fields of the input form for bookings of a schedule. Without a schedule id the user fields are returned:
+
+    client.Schedules.InputFieldList(12345); //=> SuperSaaS.API.Models.FieldList[] (Name, Type, Label, Required)
+    client.Schedules.InputFieldList(); //=> user fields
+
+#### Error Details
+
+Failed requests throw an `SSSException`. The message is the raw response body as before. `StatusCode` holds the HTTP status (`int?`, null if the failure was not an HTTP error response) and `Errors` the parsed `errors` array of the response (`IList<ApiError>` with `Status`, `Title` and `Code`; empty when the body has none):
+
+    try { client.Schedules.List(); }
+    catch (SSSException e) {
+        e.StatusCode; //=> 404
+        e.Errors[0].Title; //=> "Not found"
+    }
+
 #### List Template Forms
 
 Get all forms by template `superform_id`, with `from` time param:
