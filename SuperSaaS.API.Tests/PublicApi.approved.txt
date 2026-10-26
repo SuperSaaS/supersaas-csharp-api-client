@@ -152,6 +152,8 @@ type class SuperSaaS.API.Models.Slot : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.Slot.property public System.DateTime finish { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.DateTime start { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.Int32 level { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.Int32 waiting { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.String capacity { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.String color { public get; public set; }
   SuperSaaS.API.Models.Slot.property public System.String description { public get; public set; }

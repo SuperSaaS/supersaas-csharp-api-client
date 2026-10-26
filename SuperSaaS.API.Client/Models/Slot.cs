@@ -20,6 +20,9 @@ namespace SuperSaaS.API.Models
         /// <summary>The id of the slot.</summary>
         public int id { get; set; }
 
+        /// <summary>Number of places taken.</summary>
+        public int level { get; set; }
+
         /// <summary>Location of the slot.</summary>
         public string location { get; set; }
 
@@ -31,6 +34,9 @@ namespace SuperSaaS.API.Models
 
         /// <summary>Title of the slot.</summary>
         public string title { get; set; }
+
+        /// <summary>Number of people on the waiting list.</summary>
+        public int waiting { get; set; }
 
         /// <summary>The bookings in the slot.</summary>
         public Appointment[] appointments { get; set; }
