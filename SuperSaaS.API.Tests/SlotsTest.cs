@@ -51,6 +51,17 @@ namespace SuperSaaS.API.Tests
             Assert.DoesNotThrow(() => { this.Client.Slots.Delete(123, 456); });
         }
 
+        [Test()]
+        public void DeserializesLevelAndWaitingTest()
+        {
+            // Shape of a GET /api/slots/:id.json response
+            string body = "{\"id\":306891795,\"start\":\"2026-10-24T14:20\",\"finish\":\"2026-10-24T15:18\",\"title\":\"Reminder test\",\"capacity\":2,\"level\":1,\"waiting\":3,\"color\":0}";
+            var settings = new Newtonsoft.Json.JsonSerializerSettings { NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore };
+            var slot = Newtonsoft.Json.JsonConvert.DeserializeObject<SuperSaaS.API.Models.Slot>(body, settings);
+            Assert.AreEqual(1, slot.level);
+            Assert.AreEqual(3, slot.waiting);
+        }
+
         private Dictionary<string, string> SlotArgs()
         {
             return new Dictionary<string, string> {
