@@ -9,64 +9,28 @@ using SuperSaaS.API.Models;
 namespace SuperSaaS.API.Tests
 {
     /// <summary>
-    /// Exercises the HTTP layer of <see cref="Client"/> through a fake message handler.
+    /// Exercises the HTTP layer of <see cref="Client"/> through a fake message Handler.
     /// </summary>
     [TestFixture]
-    public class HttpLayerTest
+    public class HttpLayerTest : FakeHttpFixture
     {
-        private const string Host = "https://test.example";
-
-        private FakeHttpMessageHandler handler = null!;
-        private HttpClient httpClient = null!;
-        private Client client = null!;
-
-        [SetUp]
-        public void CreateClient()
-        {
-            handler = new FakeHttpMessageHandler();
-            httpClient = new HttpClient(handler);
-            client = new Client("accnt", "secret", Host) { HttpClient = httpClient };
-        }
-
-        [TearDown]
-        public void DisposeHttpClient()
-        {
-            httpClient.Dispose();
-            handler.Dispose();
-        }
-
-        private void RespondWith(HttpStatusCode status, string body, string? location = null)
-        {
-            handler.Respond = _ =>
-            {
-                var response = new HttpResponseMessage(status) { Content = new StringContent(body) };
-                if (location != null)
-                {
-                    response.Headers.Location = new Uri(location, UriKind.RelativeOrAbsolute);
-                }
-                return response;
-            };
-        }
-
-        private HttpRequestMessage LastMessage => handler.LastRequest.Message;
-
         [Test]
         public void UsesTheMatchingHttpMethod()
         {
-            client.Get<object>("/test");
+            Client.Get<object>("/test");
             Assert.That(LastMessage.Method, Is.EqualTo(System.Net.Http.HttpMethod.Get));
-            client.Post<object>("/test");
+            Client.Post<object>("/test");
             Assert.That(LastMessage.Method, Is.EqualTo(System.Net.Http.HttpMethod.Post));
-            client.Put<object>("/test");
+            Client.Put<object>("/test");
             Assert.That(LastMessage.Method, Is.EqualTo(System.Net.Http.HttpMethod.Put));
-            client.Delete<object>("/test");
+            Client.Delete<object>("/test");
             Assert.That(LastMessage.Method, Is.EqualTo(System.Net.Http.HttpMethod.Delete));
         }
 
         [Test]
         public void BuildsUrlAndEscapesQueryKeysAndValues()
         {
-            client.Get<object>("/users", new JsonArgs { { "a key", "x&y=z" }, { "name", "Zoë" } });
+            Client.Get<object>("/users", new JsonArgs { { "a key", "x&y=z" }, { "name", "Zoë" } });
             Assert.That(LastMessage.RequestUri!.AbsoluteUri,
                 Is.EqualTo(Host + "/api/users.json?a%20key=x%26y%3Dz&name=Zo%C3%AB"));
         }
@@ -74,7 +38,7 @@ namespace SuperSaaS.API.Tests
         [Test]
         public void OmitsQueryStringWhenThereAreNoParameters()
         {
-            client.Get<object>("/users", new JsonArgs());
+            Client.Get<object>("/users", new JsonArgs());
             Assert.That(LastMessage.RequestUri!.AbsoluteUri, Is.EqualTo(Host + "/api/users.json"));
         }
 
@@ -82,10 +46,10 @@ namespace SuperSaaS.API.Tests
         public void SendsJsonBodyAsUtf8()
         {
             var data = new NestedJsonArgs { { "user", new JsonArgs { { "full_name", "Zoë Ångström" } } } };
-            client.Post<object>("/users", data);
+            Client.Post<object>("/users", data);
 
             byte[] expected = Encoding.UTF8.GetBytes("{\"user\":{\"full_name\":\"Zoë Ångström\"}}");
-            Assert.That(handler.LastRequest.Body, Is.EqualTo(expected));
+            Assert.That(Handler.LastRequest.Body, Is.EqualTo(expected));
             Assert.That(LastMessage.Content!.Headers.ContentType!.MediaType, Is.EqualTo("application/json"));
             Assert.That(LastMessage.Content.Headers.ContentType.CharSet, Is.EqualTo("utf-8"));
         }
@@ -93,15 +57,15 @@ namespace SuperSaaS.API.Tests
         [Test]
         public void SendsNoBodyWithoutPostData()
         {
-            client.Delete<object>("/users/1");
-            Assert.That(handler.LastRequest.Body, Is.Null);
+            Client.Delete<object>("/users/1");
+            Assert.That(Handler.LastRequest.Body, Is.Null);
         }
 
         [Test]
         public void SendsUtf8BasicAuthHeader()
         {
-            client.AccountName = "accöunt";
-            client.Get<object>("/test");
+            Client.AccountName = "accöunt";
+            Client.Get<object>("/test");
 
             Assert.That(LastMessage.Headers.Authorization!.Scheme, Is.EqualTo("Basic"));
             string decoded = Encoding.UTF8.GetString(Convert.FromBase64String(LastMessage.Headers.Authorization.Parameter!));
@@ -111,7 +75,7 @@ namespace SuperSaaS.API.Tests
         [Test]
         public void SendsUserAgentAndAcceptHeaders()
         {
-            client.Get<object>("/test");
+            Client.Get<object>("/test");
 
             Assert.That(string.Join(" ", LastMessage.Headers.GetValues("User-Agent")),
                 Is.EqualTo("SSS/" + Client.VERSION + " DOTNET/" + Environment.Version + " API/" + Client.API_VERSION));
@@ -122,7 +86,7 @@ namespace SuperSaaS.API.Tests
         public void DeserializesResponseBody()
         {
             RespondWith(HttpStatusCode.OK, "{\"id\":42,\"name\":\"Zoë\",\"unknown\":null}");
-            User user = client.Get<User>("/users/42");
+            User user = Client.Get<User>("/users/42");
             Assert.That(user.id, Is.EqualTo(42));
             Assert.That(user.name, Is.EqualTo("Zoë"));
         }
@@ -131,7 +95,7 @@ namespace SuperSaaS.API.Tests
         public void ReturnsDefaultForEmptyResponseBody()
         {
             RespondWith(HttpStatusCode.OK, "");
-            Assert.That(client.Get<User>("/users/42"), Is.Null);
+            Assert.That(Client.Get<User>("/users/42"), Is.Null);
         }
 
         [Test]
@@ -139,7 +103,7 @@ namespace SuperSaaS.API.Tests
         {
             RespondWith(HttpStatusCode.UnprocessableEntity, "{\"errors\":[{\"title\":\"Name is invalid\"}]}");
 
-            var ex = Assert.Throws<SSSException>(() => client.Get<User>("/users/42"));
+            var ex = Assert.Throws<SSSException>(() => Client.Get<User>("/users/42"));
             Assert.That(ex!.Message, Is.EqualTo("{\"errors\":[{\"title\":\"Name is invalid\"}]}"));
         }
 
@@ -147,9 +111,9 @@ namespace SuperSaaS.API.Tests
         public void WrapsTransportErrorsKeepingMessageAndInnerException()
         {
             var failure = new HttpRequestException("Connection refused");
-            handler.Respond = _ => throw failure;
+            Handler.Respond = _ => throw failure;
 
-            var ex = Assert.Throws<SSSException>(() => client.Get<User>("/users/42"));
+            var ex = Assert.Throws<SSSException>(() => Client.Get<User>("/users/42"));
             Assert.That(ex!.Message, Is.EqualTo("Connection refused"));
             Assert.That(ex.InnerException, Is.SameAs(failure));
         }
@@ -157,9 +121,9 @@ namespace SuperSaaS.API.Tests
         [Test]
         public void TestModeDoesNotSendRequests()
         {
-            client.Test = true;
-            Assert.That(client.Post<User>("/users", new NestedJsonArgs()), Is.Null);
-            Assert.That(handler.Requests, Is.Empty);
+            Client.Test = true;
+            Assert.That(Client.Post<User>("/users", new NestedJsonArgs()), Is.Null);
+            Assert.That(Handler.Requests, Is.Empty);
         }
 
         [Test]
@@ -185,14 +149,14 @@ namespace SuperSaaS.API.Tests
         [Test]
         public void GetResourceIdFromHeaderReadsLastResponse()
         {
-            Assert.That(client.GetResourceIdFromHeader(), Is.Zero);
+            Assert.That(Client.GetResourceIdFromHeader(), Is.Zero);
             RespondWith(HttpStatusCode.Created, "", Host + "/api/users/321.json");
-            client.Post<User>("/users", new NestedJsonArgs());
-            Assert.That(client.GetResourceIdFromHeader(), Is.EqualTo(321));
+            Client.Post<User>("/users", new NestedJsonArgs());
+            Assert.That(Client.GetResourceIdFromHeader(), Is.EqualTo(321));
 
             RespondWith(HttpStatusCode.Created, "", Host + "/api/users/not-a-number");
-            client.Post<User>("/users", new NestedJsonArgs());
-            Assert.That(client.GetResourceIdFromHeader(), Is.Zero);
+            Client.Post<User>("/users", new NestedJsonArgs());
+            Assert.That(Client.GetResourceIdFromHeader(), Is.Zero);
         }
     }
 }
