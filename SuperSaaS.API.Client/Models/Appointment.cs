@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace SuperSaaS.API.Models
 {
@@ -92,8 +93,19 @@ namespace SuperSaaS.API.Models
         /// <summary>Custom field visible to superusers only.</summary>
         public string super_field { get; set; }
 
-        /// <summary>Who last updated the appointment.</summary>
+        /// <summary>
+        /// Always <c>default(DateTime)</c>. The API sends the name of who made the change; see
+        /// <see cref="updated_by_name"/>.
+        /// </summary>
+        [JsonIgnore]
         public DateTime updated_by { get; set; }
+
+        /// <summary>
+        /// Who last updated the appointment, e.g. <c>"administrator"</c> or the name of a user. The API only sends
+        /// it once the appointment has been changed after it was created; <c>null</c> otherwise.
+        /// </summary>
+        [JsonProperty("updated_by")]
+        public string updated_by_name { get; set; }
 
         /// <summary>When the appointment was last updated.</summary>
         public string updated_on { get; set; }

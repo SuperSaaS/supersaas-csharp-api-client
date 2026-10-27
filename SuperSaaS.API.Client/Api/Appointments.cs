@@ -20,8 +20,8 @@ namespace SuperSaaS.API.Api
         /// <returns>The appointments.</returns>
         public Appointment[] Agenda(int scheduleId, int userId, DateTime fromTime)
         {
-            return Client.Get<Appointment[]>("/agenda/" + ApiParams.Format(scheduleId),
-                AgendaQuery(userId, fromTime, false));
+            return ListResponse<Appointment>.ItemsOf(Client.Get<ListResponse<Appointment>>(
+                "/agenda/" + ApiParams.Format(scheduleId), AgendaQuery(userId, fromTime, false)));
         }
 
         /// <summary>Gets the agenda slots of a user in a capacity schedule.</summary>
@@ -31,7 +31,8 @@ namespace SuperSaaS.API.Api
         /// <returns>The slots with the user's bookings.</returns>
         public Slot[] AgendaSlots(int scheduleId, int userId, DateTime fromTime)
         {
-            return Client.Get<Slot[]>("/agenda/" + ApiParams.Format(scheduleId), AgendaQuery(userId, fromTime, true));
+            return ListResponse<Slot>.ItemsOf(Client.Get<ListResponse<Slot>>(
+                "/agenda/" + ApiParams.Format(scheduleId), AgendaQuery(userId, fromTime, true)));
         }
 
         /// <summary>Gets available (free) times in a schedule.</summary>
@@ -65,7 +66,8 @@ namespace SuperSaaS.API.Api
             {
                 data.Add("maxresults", ApiParams.Format(limit));
             }
-            return Client.Get<Appointment[]>("/free/" + ApiParams.Format(scheduleId), data);
+            return ListResponse<Appointment>.ItemsOf(Client.Get<ListResponse<Appointment>>(
+                "/free/" + ApiParams.Format(scheduleId), data));
         }
 
         /// <summary>Gets the appointments of a schedule.</summary>
