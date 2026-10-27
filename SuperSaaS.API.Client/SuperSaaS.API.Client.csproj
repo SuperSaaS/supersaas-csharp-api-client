@@ -10,7 +10,7 @@
 
   <PropertyGroup Label="Package">
     <PackageId>SuperSaaS.API.Client</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
     <Title>SuperSaaS</Title>
     <Authors>Travis Dunn</Authors>
     <Company>SuperSaaS</Company>
