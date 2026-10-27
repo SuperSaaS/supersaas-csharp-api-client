@@ -16,8 +16,16 @@
     <PackageReference Include="NUnit.Analyzers" Version="4.4.0" PrivateAssets="all" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--
+    By default the tests run against the net10.0 build of the library. Pass -p:TestNetStandard=true to run them
+    against the netstandard2.0 build instead (the code path used on .NET Framework and older .NET).
+  -->
+  <ItemGroup Condition="'$(TestNetStandard)' != 'true'">
     <ProjectReference Include="..\SuperSaaS.API.Client\SuperSaaS.API.Client.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TestNetStandard)' == 'true'">
+    <ProjectReference Include="..\SuperSaaS.API.Client\SuperSaaS.API.Client.csproj"
+                      SetTargetFramework="TargetFramework=netstandard2.0" />
   </ItemGroup>
 
   <ItemGroup>
