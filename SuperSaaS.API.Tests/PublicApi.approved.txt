@@ -111,6 +111,7 @@ type class SuperSaaS.API.Models.Appointment : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.Appointment.property public System.String service_name { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String status { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String super_field { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String updated_by_name { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String updated_on { public get; public set; }
 type class SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.BaseModel.ctor public SuperSaaS.API.Models.BaseModel()

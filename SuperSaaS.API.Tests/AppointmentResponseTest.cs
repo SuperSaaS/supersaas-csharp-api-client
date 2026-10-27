@@ -19,7 +19,7 @@ namespace SuperSaaS.API.Tests
             "{\"id\":102,\"schedule_id\":345,\"user_id\":7,\"resource_id\":611,\"res_name\":\"Meeting Room 1\"," +
             "\"start\":\"2026-11-02T11:00\",\"finish\":\"2026-11-02T12:00\",\"full_name\":\"Tester Test\"," +
             "\"created_on\":\"2026-10-27T08:15:00Z\",\"created_by\":\"administrator\"," +
-            "\"deleted\":false}";
+            "\"updated_on\":\"2026-10-27T08:20:03Z\",\"updated_by\":\"administrator\",\"deleted\":false}";
 
         private const string FreeSlot =
             "{\"id\":611531309,\"name\":\"Meeting Room 1\",\"count\":1,\"start\":\"2026-11-02T09:00\"," +
@@ -38,6 +38,7 @@ namespace SuperSaaS.API.Tests
 
             Assert.That(agenda.Select(a => a.id), Is.EqualTo(new[] { 101, 102 }));
             Assert.That(agenda[0].res_name, Is.EqualTo("Meeting Room 1"));
+            Assert.That(agenda[1].updated_by_name, Is.EqualTo("administrator"));
         }
 
         [Test]
@@ -106,6 +107,48 @@ namespace SuperSaaS.API.Tests
             RespondWith(HttpStatusCode.OK, "{}");
 
             Assert.That(Client.Appointments.Available(345, DateTime.Now), Is.Empty);
+        }
+
+        [Test]
+        public void GetReadsUpdatedByAsTheName()
+        {
+            RespondWith(HttpStatusCode.OK, UpdatedBooking);
+
+            Appointment booking = Client.Appointments.Get(345, 102);
+
+            Assert.That(booking.id, Is.EqualTo(102));
+            Assert.That(booking.updated_by_name, Is.EqualTo("administrator"));
+            Assert.That(booking.updated_by, Is.EqualTo(default(DateTime)));
+            Assert.That(booking.updated_on, Is.EqualTo("2026-10-27T08:20:03Z"));
+            Assert.That(booking.created_by, Is.EqualTo("administrator"));
+        }
+
+        [Test]
+        public void UpdatedByNameIsNullForABookingThatWasNotChanged()
+        {
+            RespondWith(HttpStatusCode.OK, Booking);
+
+            Assert.That(Client.Appointments.Get(345, 101).updated_by_name, Is.Null);
+        }
+
+        [Test]
+        public void ListReadsUpdatedBookings()
+        {
+            RespondWith(HttpStatusCode.OK, "[" + Booking + "," + UpdatedBooking + "]");
+
+            Appointment[] bookings = Client.Appointments.List(345, false);
+
+            Assert.That(bookings.Select(a => a.updated_by_name), Is.EqualTo(new[] { null, "administrator" }));
+        }
+
+        [Test]
+        public void ChangesReadsUpdatedBookings()
+        {
+            RespondWith(HttpStatusCode.OK, "{\"bookings\":[" + UpdatedBooking + "]}");
+
+            Changes changes = Client.Appointments.Changes(345, DateTime.Now);
+
+            Assert.That(changes.bookings.Single().updated_by_name, Is.EqualTo("administrator"));
         }
     }
 }
