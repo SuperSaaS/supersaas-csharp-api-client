@@ -15,7 +15,7 @@
     <Authors>Travis Dunn</Authors>
     <Company>SuperSaaS</Company>
     <Description>Online appointment scheduler for any type of business. Flexible and affordable booking software that can be integrated into any site. Free basic version.</Description>
-    <PackageTags>online appointment schedule;booking calendar;appointment book;reservation system;scheduling software;online booking system;scheduling system</PackageTags>
+    <PackageTags>supersaas;scheduling;booking;appointments;reservations;calendar;online-booking;api-client</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/SuperSaaS/supersaas-csharp-api-client</PackageProjectUrl>
     <RepositoryUrl>https://github.com/SuperSaaS/supersaas-csharp-api-client</RepositoryUrl>
