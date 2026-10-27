@@ -1,81 +1,70 @@
-﻿using NUnit.Framework;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
-    public class UsersTest
+    [TestFixture]
+    public class UsersTest : TestModeFixture
     {
-        public Client Client;
-
-        [SetUp]
-        public void Init()
-        {
-            Configuration config = new Configuration();
-            config.AccountName = "accnt";
-            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
-            config.Test = true;
-
-            this.Client = new Client(config);
-        }
-
-        [Test()]
+        [Test]
         public void GetTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Get(123); });
+            Assert.DoesNotThrow(() => Client.Users.Get(123));
         }
 
-        [Test()]
+        [Test]
         public void GetFkTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Get("123fk"); });
+            Assert.DoesNotThrow(() => Client.Users.Get("123fk"));
         }
 
-        [Test()]
+        [Test]
         public void ListTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.List(true, 10, 15); });
+            Assert.DoesNotThrow(() => Client.Users.List(true, 10, 15));
         }
 
-        [Test()]
+        [Test]
         public void CreateTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Create(this.UserArgs()); });
+            Assert.DoesNotThrow(() => Client.Users.Create(UserArgs()));
         }
 
-        [Test()]
+        [Test]
         public void CreateFkTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Create(this.UserArgs(), "123fk"); });
+            Assert.DoesNotThrow(() => Client.Users.Create(UserArgs(), "123fk"));
         }
 
-        [Test()]
+        [Test]
         public void UpdateTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Update(123, this.UserArgs()); });
+            Assert.DoesNotThrow(() => Client.Users.Update(123, UserArgs()));
         }
 
-        [Test()]
+        [Test]
         public void DeleteTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Users.Delete(123); });
+            Assert.DoesNotThrow(() => Client.Users.Delete(123));
         }
 
-        private Dictionary<string, string> UserArgs() {
-            return new Dictionary<string, string> {
-                {"name", "Test"},
-                {"email", "test@example.com"},
-                {"password", "pass123"},
-                {"full_name", "Tester Test"},
-                {"address", "123 St, City"},
-                {"mobile", "555-5555"},
-                {"phone", "555-5555"},
-                {"country", "FR"},
-                {"field_1", "f 1"},
-                {"field_2", "f 2"},
-                {"super_field", "sf"},
-                {"credit", "10"},
-                {"role", "3"}
+        private static Dictionary<string, string> UserArgs()
+        {
+            return new Dictionary<string, string>
+            {
+                { "name", "Test" },
+                { "email", "test@example.com" },
+                { "password", "pass123" },
+                { "full_name", "Tester Test" },
+                { "address", "123 St, City" },
+                { "mobile", "555-5555" },
+                { "phone", "555-5555" },
+                { "country", "FR" },
+                { "field_1", "f 1" },
+                { "field_2", "f 2" },
+                { "super_field", "sf" },
+                { "credit", "10" },
+                { "role", "3" }
             };
         }
     }

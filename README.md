@@ -9,37 +9,56 @@ The SuperSaaS API provides services that can be used to add online booking and s
 1. [Register for a (free) SuperSaaS account](https://www.supersaas.com/accounts/new), and
 2. get your account name and generate an API key on the [Account Info](https://www.supersaas.com/accounts/edit) page.
 
-##### Dependencies
+### Supported frameworks
 
-.NET Framework 3.5 or greater, with NuGet.
+The package targets `netstandard2.0` and `net10.0`, so it runs on:
 
-Json.NET.
+- .NET 10 and every other .NET (Core) version that supports .NET Standard 2.0
+- .NET Framework 4.6.2 or later
+
+The only dependency is [Json.NET](https://www.newtonsoft.com/json) (`Newtonsoft.Json`). Applications on .NET Framework 3.5 to 4.6.1 can keep using version 1.0.1 of the package.
 
 ## Installation
 
-From within Visual Studio you can use the NuGet GUI to search for and install the SuperSaaS SDK NuGet package. Alternatively, type the following command into the Package Manager Console:
+    dotnet add package SuperSaaS.API.Client
+
+Or, from the Visual Studio Package Manager Console:
 
     Install-Package SuperSaaS.API.Client
 
 ## Configuration
 
-Initialize the SuperSaaS `Client` with authorization credentials:
+Initialize the SuperSaaS `Client` with your account name and API key:
 
-    using SuperSaaS.API.Client;
-    Client client = new Client("accnt", "pwd", "usr");
-    client.AccountName; //=> 'accnt'
-    client.ApiKey; //=> 'xxxxxxxxxxxxxxxxxxxxxx'
+```csharp
+using SuperSaaS.API;
 
-If the client isn't configured explicitly, it will use default `ENV` variables for the account name and API key.
-Set these `ENV` variables before calling the client. 
+var client = new Client("accnt", "xxxxxxxxxxxxxxxxxxxxxx");
+client.AccountName; //=> "accnt"
+client.ApiKey;      //=> "xxxxxxxxxxxxxxxxxxxxxx"
+```
 
-    ENV['SSS_API_ACCOUNT_NAME'] = 'accnt'
-    ENV['SSS_API_KEY'] = 'xxxxxxxxxxxxxxxxxxxxxx' 
+If the client isn't configured explicitly, it reads the account name and API key from the `SSS_API_ACCOUNT_NAME` and `SSS_API_KEY` environment variables:
 
-    using SuperSaaS.API.Client;
-    Client client = new Client()
-    client.AccountName; //=> 'accnt'
-    client.ApiKey; //=> 'xxxxxxxxxxxxxxxxxxxxxx'
+```csharp
+// SSS_API_ACCOUNT_NAME=accnt
+// SSS_API_KEY=xxxxxxxxxxxxxxxxxxxxxx
+var client = new Client();
+client.AccountName; //=> "accnt"
+```
+
+Settings can also be passed with a `Configuration` object:
+
+```csharp
+var client = new Client(new Configuration
+{
+    AccountName = "accnt",
+    ApiKey = "xxxxxxxxxxxxxxxxxxxxxx",
+    Host = Configuration.DEFAULT_HOST
+});
+```
+
+Requests time out after `Client.TIMEOUT_SECONDS` milliseconds (10 seconds; the constant's value is in milliseconds despite its name).
 
 ## API Methods
 
@@ -47,174 +66,237 @@ Details of the data structures, parameters, and values can be found on the devel
 
 https://www.supersaas.com/info/dev
 
+All methods are synchronous. Failed requests throw a `SuperSaaS.API.SSSException`: for errors returned by the API its `Message` is the response body; for network errors and timeouts it is the message of the underlying exception, which is available as `InnerException`.
+
+```csharp
+try
+{
+    client.Users.Get(12345);
+}
+catch (SSSException e)
+{
+    Console.WriteLine(e.Message);
+}
+```
+
 #### List Schedules
 
 Get all account schedules:
 
-    client.Schedules.List #=> SuperSaaS.CSharp.Models.Schedule[]
-    
-#### List Resource
+```csharp
+client.Schedules.List(); //=> SuperSaaS.API.Models.Schedule[]
+```
 
-Get all services/resources by `schedule_id`:
+#### List Resources
 
-    client.Schedules.Resources(12345) #=> SuperSaaS.CSharp.Models.Resource[]
+Get all services/resources by `scheduleId`:
+
+```csharp
+client.Schedules.Resources(12345); //=> SuperSaaS.API.Models.Resource[]
+```
 
 _Note: does not work for capacity type schedules._
 
 #### Create User
 
-Create a user with user attributes params:
+Create a user with user attributes, an optional foreign key and an optional `webhook` flag:
 
-    client.Users.Create(
-        new Dictionary<string, string>
-        {
-            { "full_name", "Example Name" },
-            { "email", "example@example.com" }
-        }
-    ); //=> SuperSaaS.CSharp.Models.User
+```csharp
+var attributes = new Dictionary<string, string>
+{
+    { "full_name", "Example Name" },
+    { "name", "example@example.com" },
+    { "email", "example@example.com" }
+};
+client.Users.Create(attributes);
+client.Users.Create(attributes, "123fk", webhook: true); // with your own foreign key
+```
+
+The id of the new user can be read afterwards with `client.GetResourceIdFromHeader()`.
 
 #### Update User
 
-Update a user by `user_id` with user attributes params:
+Update a user by `userId` with user attributes:
 
-    client.Users.Update(12345, 
-        new Dictionary<string, string>
-        {
-            { "full_name", "New Name" }
-        }
-    ); //=> SuperSaaS.CSharp.Models.User
+```csharp
+client.Users.Update(12345, new Dictionary<string, string>
+{
+    { "full_name", "New Name" }
+}); //=> SuperSaaS.API.Models.User
+```
 
 #### Delete User
 
-Delete a single user by `user_id`:
+Delete a single user by `userId`:
 
-    client.Users.Delete(12345);
+```csharp
+client.Users.Delete(12345);
+```
 
 #### Get User
 
-Get a single user by `user_id`:
+Get a single user by `userId` or by your foreign key:
 
-    client.Users.Get(12345); //=> SuperSaaS.CSharp.Models.User
+```csharp
+client.Users.Get(12345);   //=> SuperSaaS.API.Models.User
+client.Users.Get("123fk"); //=> SuperSaaS.API.Models.User
+```
 
 #### List Users
 
 Get all users with optional `form` and `limit`/`offset` pagination params:
 
-    client.Users.List(true, 10, 15); //=> SuperSaaS.CSharp.Models.User[]
+```csharp
+client.Users.List(true, 10, 15); //=> SuperSaaS.API.Models.User[]
+```
 
 #### Create Appointment/Booking
 
-Create an appointment by `schedule_id` and `user_id` with appointment attributes and `form` and `webhook` params:
+Create an appointment by `scheduleId` and `userId` with appointment attributes and `form` and `webhook` params:
 
-    client.Appointments.Create(12345, 67890, 
-        new Dictionary<string, string>
-        {
-            { "full_name", "New Name" },
-            { "email", "example@example.com" }
-            { "slot_id", "12345" }
-        }, true, true
-    ); //=> SuperSaaS.CSharp.Models.Appointment
+```csharp
+Appointment appointment = client.Appointments.Create(12345, 67890, new Dictionary<string, string>
+{
+    { "full_name", "New Name" },
+    { "email", "example@example.com" },
+    { "slot_id", "12345" }
+}, true, true);
+appointment.id; //=> id of the new appointment
+```
 
 #### Update Appointment/Booking
 
-Update an appointment by `schedule_id` and `appointment_id` with appointment attributes params:
+Update an appointment by `scheduleId` and `appointmentId` with appointment attributes:
 
-    client.Appointments.Update(1234, 9876, 
-        new Dictionary<string, string>
-        {
-            { "full_name", "New Name" },
-            { "email", "example@example.com" }
-            { "slot_id", "12345" }
-        }
-    ); //=> SuperSaaS.CSharp.Models.Appointment
+```csharp
+client.Appointments.Update(12345, 67890, new Dictionary<string, string>
+{
+    { "full_name", "New Name" },
+    { "email", "example@example.com" }
+}); //=> SuperSaaS.API.Models.Appointment
+```
 
 #### Delete Appointment/Booking
 
-Delete a single appointment by `schedule_id` and `appointment_id`:
+Delete a single appointment by `scheduleId` and `appointmentId`:
 
-    client.Appointments.Delete(12345, 67890);
+```csharp
+client.Appointments.Delete(12345, 67890);
+```
 
 #### Get Appointment/Booking
 
-Get a single appointment by `schedule_id` and `appointment_id`:
+Get a single appointment by `scheduleId` and `appointmentId`:
 
-    client.Appointments.Get(12345, 67890); //=> SuperSaaS.CSharp.Models.Appointment
+```csharp
+client.Appointments.Get(12345, 67890); //=> SuperSaaS.API.Models.Appointment
+```
 
 #### List Appointments/Bookings
 
-Get agenda (upcoming) appointments by `schedule_id` and `user_id`, with `form` and `slot` view params:
+List appointments by `scheduleId`, with `form`, optional start time and `limit` params:
 
-    client.Appointments.List(12345, 67890, true, true); //=> SuperSaaS.CSharp.Models.Appointment[]
+```csharp
+client.Appointments.List(12345, true, DateTime.Now, 10); //=> SuperSaaS.API.Models.Appointment[]
+client.Appointments.List(12345, false);                  //=> SuperSaaS.API.Models.Appointment[]
+```
 
 #### Get Agenda
 
-Get agenda (upcoming) appointments by `schedule_id` and `user_id`, with `form` view params:
+Get agenda (upcoming) appointments by `scheduleId` and `userId`, from a given time:
 
-    client.Appointments.Agenda(12345, 67890, true); //=> SuperSaaS.CSharp.Models.Appointment[]
+```csharp
+client.Appointments.Agenda(12345, 67890, DateTime.Now); //=> SuperSaaS.API.Models.Appointment[]
+```
 
 #### Get Agenda Slots
 
-Get agenda slots for a capacity schedule by `schedule_id` and `user_id`, with `form` view param:
+Get agenda slots for a capacity schedule by `scheduleId` and `userId`, from a given time:
 
-    client.Appointments.AgendaSlots(12345, 67890, true); //=> SuperSaaS.CSharp.Models.Slot[]
+```csharp
+client.Appointments.AgendaSlots(12345, 67890, DateTime.Now); //=> SuperSaaS.API.Models.Slot[]
+```
 
 #### Get Available Appointments/Bookings
 
-Get available appointments by `schedule_id`, with `from` time and `length_minutes` and `resource` params:
+Get available (free) times by `scheduleId`, from a given time, with optional `lengthMinutes`, `resource`, `full` and `limit` params:
 
-    client.Appointments.Available(12345, DateTime.Now, 15, 'My Class'); //=> SuperSaaS.CSharp.Models.Appointment[]
+```csharp
+client.Appointments.Available(12345, DateTime.Now, 15, "My Class"); //=> SuperSaaS.API.Models.Appointment[]
+```
 
 #### Get Recent Changes
 
-Get recently changed appointments by `schedule_id`, with `from` time:
+Get recently changed appointments by `scheduleId`, from a given time:
 
-    client.Appointments.Changes(12345, DateTime.Now.AddDays(-7), true); //=> SuperSaaS.CSharp.Models.Appointment[]
+```csharp
+Changes changes = client.Appointments.Changes(12345, DateTime.Now.AddDays(-7));
+changes.bookings; //=> SuperSaaS.API.Models.Appointment[]
+```
 
 #### Get Recent Changes Slots
 
-Get recently changed slots for a capacity schedule by `schedule_id`, with `from` time:
+Get recently changed slots for a capacity schedule by `scheduleId`, from a given time:
 
-    client.Appointments.ChangesSlots(12345, DateTime.Now.AddDays(-7), true); //=> SuperSaaS.CSharp.Models.Slot[]
+```csharp
+Changes changes = client.Appointments.ChangesSlots(12345, DateTime.Now.AddDays(-7));
+changes.slots; //=> SuperSaaS.API.Models.Slot[]
+```
 
 #### List Template Forms
 
-Get all forms by template `superform_id`, with `from` time param:
+Get all forms by template `formId` (super form), with an optional `from` time:
 
-    client.Forms.List(12345, DateTime.Now.AddDays(-7)); //=> SuperSaaS.CSharp.Models.Form[]
+```csharp
+client.Forms.List(12345, DateTime.Now.AddDays(-7)); //=> SuperSaaS.API.Models.Form[]
+```
 
 #### Get Form
 
-Get a single form by `form_id`:
+Get a single form by `formId`:
 
-    client.Forms.Get(12345); //=> SuperSaaS.CSharp.Models.Form
+```csharp
+client.Forms.Get(12345); //=> SuperSaaS.API.Models.Form
+```
 
 ## Examples
 
-The Examples project contains a configurable app demonstrating how to use the API Client for common requests.
+The Examples project contains a console app demonstrating how to use the API Client for common requests. Configure it with environment variables and run it:
 
-The examples will require your account name, api key, and some of the examples will require a schedule id and/or user id and/or form id.
+    SSS_API_ACCOUNT_NAME=accnt SSS_API_KEY=xxxxxxxxxxxxxxxxxxxxxx dotnet run --project Examples
+
+Some of the examples also need a user id and/or schedule ids (`SSS_API_USER_ID`, `SSS_API_CAPACITY_SCHEDULE_ID`, `SSS_API_CAPACITY_SLOT_ID`, `SSS_API_RESOURCE_SCHEDULE_ID`, `SSS_API_SERVICE_SCHEDULE_ID`); see `Examples/Program.cs`.
 
 IMPORTANT: some of the example API requests are destructive or may incur a cost, such as deleting or adding appointments, respectively.
 
 ## Testing
 
-The HTTP requests can be stubbed by setting the client's `Test` property, e.g.
+The HTTP requests can be stubbed by setting the client's `Test` property:
 
-    using SuperSaaS.API.Client;
-    Client client = new Client();
-    client.Test = true;
+```csharp
+var client = new Client();
+client.Test = true;
+```
 
-Or by constructing the client with the `test` param, e.g.
+Or by constructing the client with the `test` param:
 
-    Client client = new Client("accnt", "pwd", null, null, true);
+```csharp
+var client = new Client("accnt", "xxxxxxxxxxxxxxxxxxxxxx", null, true);
+```
 
-Note, stubbed requests always return `null`.
+Stubbed requests are not sent and always return `null` (`default(T)`).
 
-The `Client` also provides a `LastRequest` attribute containing the `HttpWebRequest` object from the last performed request, e.g. 
+## Development
 
-    client.LastRequest; //=> System.Net.HttpWebRequest
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
-The headers, body, path, etc. of the last request can be inspected for assertion in tests, or for troubleshooting failed API requests.
+    dotnet build
+    dotnet test
+    dotnet test SuperSaaS.API.Tests -p:TestNetStandard=true   # run the tests against the netstandard2.0 build
+    dotnet format --verify-no-changes
+    dotnet pack SuperSaaS.API.Client -c Release
+
+`SuperSaaS.API.Tests/PublicApi.approved.txt` is a snapshot of the public API; a test fails when the public surface changes.
 
 ## Additional Information
 
@@ -232,7 +314,7 @@ Contact: [support@supersaas.com](mailto:support@supersaas.com)
 
 ## Releases
 
-The package follows [semantic versioning](https://semver.org/), i.e. MAJOR.MINOR.PATCH 
+The package follows [semantic versioning](https://semver.org/), i.e. MAJOR.MINOR.PATCH
 
 ## License
 

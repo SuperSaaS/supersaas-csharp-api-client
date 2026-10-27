@@ -1,35 +1,20 @@
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
-    public class SchedulesTest
+    [TestFixture]
+    public class SchedulesTest : TestModeFixture
     {
-        public Client Client;
-
-        [SetUp]
-        public void Init()
-        {
-            Configuration config = new Configuration();
-            config.AccountName = "accnt";
-            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
-            config.Test = true;
-
-            this.Client = new Client(config);
-        }
-
-        [Test()]
+        [Test]
         public void ListTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Schedules.List(); });
+            Assert.DoesNotThrow(() => Client.Schedules.List());
         }
 
-        [Test()]
+        [Test]
         public void ResourcesTest()
         {
-            Assert.DoesNotThrow(() => { this.Client.Schedules.Resources(12345); });
+            Assert.DoesNotThrow(() => Client.Schedules.Resources(12345));
         }
     }
 }

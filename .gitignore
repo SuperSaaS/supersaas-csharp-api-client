@@ -132,3 +132,9 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+# .NET SDK
+*.nupkg
+*.snupkg
+artifacts/
+*.received.txt
+.idea/

@@ -1,62 +1,49 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using SuperSaaS.API.Api;
 
 namespace SuperSaaS.API.Tests
 {
-    [TestFixture()]
-    public class ClientTest
+    [TestFixture]
+    public class ClientTest : TestModeFixture
     {
-        public Client Client;
-
-        [SetUp]
-        public void Init()
-        {
-            Configuration config = new Configuration();
-            config.AccountName = "accnt";
-            config.ApiKey = "xxxxxxxxxxxxxxxxxxxx";
-            config.Test = true;
-
-            this.Client = new Client(config);
-        }
-
-        [Test()]
+        [Test]
         public void ApiTest()
         {
-            Assert.IsInstanceOf(typeof(Appointments), this.Client.Appointments);
+            Assert.That(Client.Appointments, Is.InstanceOf<Appointments>());
         }
 
-        [Test()]
+        [Test]
         public void GetTest()
         {
-            JsonArgs data = new JsonArgs { { "test", "true" } };
-            Assert.AreEqual(default(object), this.Client.Get<object>("/test", data));
+            var data = new JsonArgs { { "test", "true" } };
+            Assert.That(Client.Get<object>("/test", data), Is.EqualTo(default(object)));
         }
 
-        [Test()]
+        [Test]
         public void PostTest()
         {
-            NestedJsonArgs data = new NestedJsonArgs
+            var data = new NestedJsonArgs
             {
                 { "user", new JsonArgs { { "test", "true" } } }
             };
-            Assert.AreEqual(default(object), this.Client.Post<object>("/test", data));
+            Assert.That(Client.Post<object>("/test", data), Is.EqualTo(default(object)));
         }
 
-        [Test()]
+        [Test]
         public void PutTest()
         {
-            NestedJsonArgs data = new NestedJsonArgs
+            var data = new NestedJsonArgs
             {
                 { "user", new JsonArgs { { "test", "true" } } }
             };
-            Assert.AreEqual(default(object), this.Client.Put<object>("/test", data));
+            Assert.That(Client.Put<object>("/test", data), Is.EqualTo(default(object)));
         }
 
-        [Test()]
+        [Test]
         public void DeleteTest()
         {
-            JsonArgs data = new JsonArgs { { "id", "123" } };
-            Assert.AreEqual(default(object), this.Client.Delete<object>("/test", null, data));
+            var data = new JsonArgs { { "id", "123" } };
+            Assert.That(Client.Delete<object>("/test", null, data), Is.EqualTo(default(object)));
         }
     }
 }

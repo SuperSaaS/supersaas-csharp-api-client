@@ -1,76 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BB20D879-6063-46D9-9AB1-3A9C142D3A91}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>SuperSaaS.CSharp.SDK</RootNamespace>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
     <AssemblyName>SuperSaaS.API.Client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <PackOnBuild>true</PackOnBuild>
+    <RootNamespace>SuperSaaS.API</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Package">
     <PackageId>SuperSaaS.API.Client</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Title>SuperSaaS</Title>
     <Authors>Travis Dunn</Authors>
-    <Owners>SuperSaaS</Owners>
-    <PackageProjectUrl>https://github.com/SuperSaaS/supersaas-csharp-api</PackageProjectUrl>
-    <Summary>Online bookings/appointments/calendars using the SuperSaaS scheduling platform.</Summary>
-    <PackageTags>online appointment schedule, booking calendar, appointment book, reservation system, scheduling software, online booking system, scheduling system</PackageTags>
-    <Title>SuperSaaS </Title>
+    <Company>SuperSaaS</Company>
     <Description>Online appointment scheduler for any type of business. Flexible and affordable booking software that can be integrated into any site. Free basic version.</Description>
+    <PackageTags>supersaas;scheduling;booking;appointments;reservations;calendar;online-booking;api-client</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/SuperSaaS/supersaas-csharp-api-client</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SuperSaaS/supersaas-csharp-api-client</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
     <NeutralLanguage>en</NeutralLanguage>
-    <PackageIconUrl>https://static.supersaas.net/favicon.ico</PackageIconUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Client.cs" />
-    <Compile Include="IClient.cs" />
-    <Compile Include="Models\BaseModel.cs" />
-    <Compile Include="Api\BaseApi.cs" />
-    <Compile Include="SSSException.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\Form.cs" />
-    <Compile Include="Models\Slot.cs" />
-    <Compile Include="Models\Appointment.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="Api\Users.cs" />
-    <Compile Include="Api\Appointments.cs" />
-    <Compile Include="Api\Forms.cs" />
-    <Compile Include="JsonArgs.cs" />
-    <Compile Include="NestedJsonArgs.cs" />
-    <Compile Include="Api\Schedules.cs" />
-    <Compile Include="Models\Schedule.cs" />
-    <Compile Include="Models\Resource.cs" />
-    <Compile Include="Models\Changes.cs" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
+    <InternalsVisibleTo Include="SuperSaaS.API.Tests" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Api\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets" Condition="Exists('..\packages\NuGet.Build.Packaging.0.2.2\build\NuGet.Build.Packaging.targets')" />
+
 </Project>

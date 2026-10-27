@@ -1,0 +1,173 @@
+assembly SuperSaaS.API.Client
+type class SuperSaaS.API.Api.Appointments : SuperSaaS.API.Api.BaseApi
+  SuperSaaS.API.Api.Appointments.ctor public SuperSaaS.API.Api.Appointments(SuperSaaS.API.IClient client)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment Create(System.Int32 scheduleId, System.Int32 userId, System.Collections.Generic.Dictionary<System.String, System.String> attributes, System.Boolean form = false, System.Boolean webhook = false)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment Get(System.Int32 scheduleId, System.Int32 appointmentId)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment Update(System.Int32 scheduleId, System.Int32 appointmentId, System.Collections.Generic.Dictionary<System.String, System.String> attributes, System.Boolean form = false, System.Boolean webhook = false)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment[] Agenda(System.Int32 scheduleId, System.Int32 userId, System.DateTime fromTime)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment[] Available(System.Int32 scheduleId, System.DateTime fromTime, System.Int32 lengthMinutes = 0, System.String resource = null, System.Boolean full = false, System.Int32 limit = 0)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment[] List(System.Int32 scheduleId, System.Boolean form, System.DateTime startTime, System.Int32 limit = 0)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Appointment[] List(System.Int32 scheduleId, System.Boolean form, System.Int32 limit = 0)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Changes Changes(System.Int32 scheduleId, System.DateTime fromTime)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Changes ChangesSlots(System.Int32 scheduleId, System.DateTime fromTime)
+  SuperSaaS.API.Api.Appointments.method public SuperSaaS.API.Models.Slot[] AgendaSlots(System.Int32 scheduleId, System.Int32 userId, System.DateTime fromTime)
+  SuperSaaS.API.Api.Appointments.method public System.Void Delete(System.Int32 scheduleId, System.Int32 appointmentId)
+type class SuperSaaS.API.Api.BaseApi
+  SuperSaaS.API.Api.BaseApi.ctor public SuperSaaS.API.Api.BaseApi(SuperSaaS.API.IClient client)
+  SuperSaaS.API.Api.BaseApi.field protected SuperSaaS.API.IClient Client
+type class SuperSaaS.API.Api.Forms : SuperSaaS.API.Api.BaseApi
+  SuperSaaS.API.Api.Forms.ctor public SuperSaaS.API.Api.Forms(SuperSaaS.API.IClient client)
+  SuperSaaS.API.Api.Forms.method public SuperSaaS.API.Models.Form Get(System.Int32 formId)
+  SuperSaaS.API.Api.Forms.method public SuperSaaS.API.Models.Form[] List(System.Int32 formId)
+  SuperSaaS.API.Api.Forms.method public SuperSaaS.API.Models.Form[] List(System.Int32 formId, System.DateTime fromTime)
+type class SuperSaaS.API.Api.Schedules : SuperSaaS.API.Api.BaseApi
+  SuperSaaS.API.Api.Schedules.ctor public SuperSaaS.API.Api.Schedules(SuperSaaS.API.IClient client)
+  SuperSaaS.API.Api.Schedules.method public SuperSaaS.API.Models.Resource[] Resources(System.Int32 scheduleId)
+  SuperSaaS.API.Api.Schedules.method public SuperSaaS.API.Models.Schedule[] List()
+type class SuperSaaS.API.Api.Users : SuperSaaS.API.Api.BaseApi
+  SuperSaaS.API.Api.Users.ctor public SuperSaaS.API.Api.Users(SuperSaaS.API.IClient client)
+  SuperSaaS.API.Api.Users.method public SuperSaaS.API.Models.User Get(System.Int32 userId)
+  SuperSaaS.API.Api.Users.method public SuperSaaS.API.Models.User Get(System.String userId)
+  SuperSaaS.API.Api.Users.method public SuperSaaS.API.Models.User Update(System.Int32 userId, System.Collections.Generic.Dictionary<System.String, System.String> attributes, System.Boolean webhook = false)
+  SuperSaaS.API.Api.Users.method public SuperSaaS.API.Models.User[] List(System.Boolean form = false, System.Int32 limit = 0, System.Int32 offset = 0)
+  SuperSaaS.API.Api.Users.method public System.Void Create(System.Collections.Generic.Dictionary<System.String, System.String> attributes, System.String userId = null, System.Boolean webhook = false)
+  SuperSaaS.API.Api.Users.method public System.Void Delete(System.Int32 userId)
+type enum SuperSaaS.API.Api.Users+Roles : System.Int32
+  SuperSaaS.API.Api.Users+Roles.BLOCKED = -1
+  SuperSaaS.API.Api.Users+Roles.SUPERUSER = 4
+  SuperSaaS.API.Api.Users+Roles.USER = 3
+type class SuperSaaS.API.Client : SuperSaaS.API.IClient
+  SuperSaaS.API.Client.ctor public SuperSaaS.API.Client(SuperSaaS.API.Configuration configuration = null)
+  SuperSaaS.API.Client.ctor public SuperSaaS.API.Client(System.String accountName, System.String key, System.String host = null, System.Boolean test = false)
+  SuperSaaS.API.Client.field public const System.Int32 TIMEOUT_SECONDS = 10000
+  SuperSaaS.API.Client.field public const System.String API_VERSION = "2"
+  SuperSaaS.API.Client.field public const System.String VERSION = "1.1.0"
+  SuperSaaS.API.Client.method public System.Int32 GetResourceIdFromHeader()
+  SuperSaaS.API.Client.method public T Delete<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.Client.method public T Get<T>(System.String path, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.Client.method public T Post<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.Client.method public T Put<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.Client.property public SuperSaaS.API.Api.Appointments Appointments { public get; public set; }
+  SuperSaaS.API.Client.property public SuperSaaS.API.Api.Forms Forms { public get; public set; }
+  SuperSaaS.API.Client.property public SuperSaaS.API.Api.Schedules Schedules { public get; public set; }
+  SuperSaaS.API.Client.property public SuperSaaS.API.Api.Users Users { public get; public set; }
+  SuperSaaS.API.Client.property public System.Boolean Test { public get; public set; }
+  SuperSaaS.API.Client.property public System.String AccountName { public get; public set; }
+  SuperSaaS.API.Client.property public System.String ApiKey { public get; public set; }
+  SuperSaaS.API.Client.property public System.String Host { public get; public set; }
+type class SuperSaaS.API.Configuration
+  SuperSaaS.API.Configuration.ctor public SuperSaaS.API.Configuration()
+  SuperSaaS.API.Configuration.field public System.Boolean Test
+  SuperSaaS.API.Configuration.field public System.String AccountName
+  SuperSaaS.API.Configuration.field public System.String ApiKey
+  SuperSaaS.API.Configuration.field public System.String Host
+  SuperSaaS.API.Configuration.field public const System.String DEFAULT_HOST = "https://www.supersaas.com"
+type static class SuperSaaS.API.HttpMethod
+  SuperSaaS.API.HttpMethod.field public const System.String DELETE = "DELETE"
+  SuperSaaS.API.HttpMethod.field public const System.String GET = "GET"
+  SuperSaaS.API.HttpMethod.field public const System.String POST = "POST"
+  SuperSaaS.API.HttpMethod.field public const System.String PUT = "PUT"
+type interface SuperSaaS.API.IClient
+  SuperSaaS.API.IClient.method public System.Int32 GetResourceIdFromHeader()
+  SuperSaaS.API.IClient.method public T Delete<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.IClient.method public T Get<T>(System.String path, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.IClient.method public T Post<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
+  SuperSaaS.API.IClient.method public T Put<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
+type class SuperSaaS.API.JsonArgs : System.Collections.Generic.Dictionary<System.String, System.String>
+  SuperSaaS.API.JsonArgs.ctor public SuperSaaS.API.JsonArgs()
+type class SuperSaaS.API.Models.Appointment : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.Appointment.ctor public SuperSaaS.API.Models.Appointment()
+  SuperSaaS.API.Models.Appointment.property public SuperSaaS.API.Models.Form form { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public SuperSaaS.API.Models.Slot slot { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Boolean deleted { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Boolean waitlisted { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.DateTime created_on { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.DateTime start { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.DateTime updated_by { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 resource_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 role { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 schedule_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 service_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 slot_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32 user_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String address { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String country { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String created_by { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String description { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String email { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String field_1 { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String field_1_r { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String field_2 { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String field_2_r { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String finish { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String full_name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String mobile { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String phone { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String price { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String res_name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String schedule_name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String service_name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String status { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String super_field { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String updated_by_name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String updated_on { public get; public set; }
+type class SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.BaseModel.ctor public SuperSaaS.API.Models.BaseModel()
+  SuperSaaS.API.Models.BaseModel.property public System.Collections.Generic.Dictionary<System.String, System.String[]> errors { public get; public set; }
+type class SuperSaaS.API.Models.Changes : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.Changes.ctor public SuperSaaS.API.Models.Changes()
+  SuperSaaS.API.Models.Changes.property public SuperSaaS.API.Models.Appointment[] bookings { public get; public set; }
+  SuperSaaS.API.Models.Changes.property public SuperSaaS.API.Models.Slot[] slots { public get; public set; }
+type class SuperSaaS.API.Models.Form : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.Form.ctor public SuperSaaS.API.Models.Form()
+  SuperSaaS.API.Models.Form.property public System.Boolean deleted { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.DateTime created_on { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.DateTime updated_on { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.Int32 reservation_process_id { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.Int32 super_form_id { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.Int32 user_id { public get; public set; }
+  SuperSaaS.API.Models.Form.property public System.Object content { public get; public set; }
+type class SuperSaaS.API.Models.Resource : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.Resource.ctor public SuperSaaS.API.Models.Resource()
+  SuperSaaS.API.Models.Resource.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Resource.property public System.String name { public get; public set; }
+type class SuperSaaS.API.Models.Schedule : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.Schedule.ctor public SuperSaaS.API.Models.Schedule()
+  SuperSaaS.API.Models.Schedule.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Schedule.property public System.String name { public get; public set; }
+type class SuperSaaS.API.Models.Slot : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.Slot.ctor public SuperSaaS.API.Models.Slot()
+  SuperSaaS.API.Models.Slot.property public SuperSaaS.API.Models.Appointment[] appointments { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.DateTime finish { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.DateTime start { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.String description { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.String location { public get; public set; }
+  SuperSaaS.API.Models.Slot.property public System.String title { public get; public set; }
+type class SuperSaaS.API.Models.User : SuperSaaS.API.Models.BaseModel
+  SuperSaaS.API.Models.User.ctor public SuperSaaS.API.Models.User()
+  SuperSaaS.API.Models.User.property public SuperSaaS.API.Models.Form form { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.DateTime created_on { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.Int32 id { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.Int32 role { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String address { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String country { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String credit { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String email { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String field_1 { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String field_2 { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String fk { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String full_name { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String mobile { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String name { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String phone { public get; public set; }
+  SuperSaaS.API.Models.User.property public System.String super_field { public get; public set; }
+type class SuperSaaS.API.NestedJsonArgs : System.Collections.Generic.Dictionary<System.String, SuperSaaS.API.JsonArgs>
+  SuperSaaS.API.NestedJsonArgs.ctor public SuperSaaS.API.NestedJsonArgs()
+type class SuperSaaS.API.SSSException : System.Exception
+  SuperSaaS.API.SSSException.ctor public SuperSaaS.API.SSSException()
+  SuperSaaS.API.SSSException.ctor public SuperSaaS.API.SSSException(System.String message)
+  SuperSaaS.API.SSSException.ctor public SuperSaaS.API.SSSException(System.String message, System.Exception inner)

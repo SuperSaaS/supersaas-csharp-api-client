@@ -1,129 +1,153 @@
-﻿using System;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using SuperSaaS.API;
 using SuperSaaS.API.Models;
 
 namespace Examples
 {
-    class MainClass
+    /// <summary>
+    /// Demonstrates common SuperSaaS API requests.
+    ///
+    /// Configure it with environment variables:
+    ///   SSS_API_ACCOUNT_NAME, SSS_API_KEY    account name and API key (required)
+    ///   SSS_API_HOST                         server, defaults to https://www.supersaas.com
+    ///   SSS_API_USER_ID                      user for the booking examples
+    ///   SSS_API_CAPACITY_SCHEDULE_ID, SSS_API_CAPACITY_SLOT_ID
+    ///   SSS_API_RESOURCE_SCHEDULE_ID, SSS_API_SERVICE_SCHEDULE_ID
+    ///
+    /// IMPORTANT: some examples are destructive or may incur a cost, such as deleting users or adding
+    /// appointments.
+    /// </summary>
+    internal static class Program
     {
-        private const string HOST = "";
-        private const string ACCOUNT = "";
-        private const string API_KEY = "";
-        private const int CAPACITY_SCHEDULE_ID = 0;
-        private const int CAPACITY_SLOT_ID = 0;
-        private const int RESOURCE_SCHEDULE_ID = 0;
-        private const int SERVICE_SCHEDULE_ID = 0;
-        private const int USER_ID = 0;
+        private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-        private static Client client;
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
 
-        public static void Main(string[] args)
+        private static readonly int userId = IdFromEnvironment("SSS_API_USER_ID");
+        private static readonly int capacityScheduleId = IdFromEnvironment("SSS_API_CAPACITY_SCHEDULE_ID");
+        private static readonly int capacitySlotId = IdFromEnvironment("SSS_API_CAPACITY_SLOT_ID");
+        private static readonly int resourceScheduleId = IdFromEnvironment("SSS_API_RESOURCE_SCHEDULE_ID");
+        private static readonly int serviceScheduleId = IdFromEnvironment("SSS_API_SERVICE_SCHEDULE_ID");
+
+        private static Client client = null!;
+
+        public static int Main()
         {
             Console.WriteLine("SuperSaaS Schedules Example");
 
-            client = new Client(ACCOUNT, API_KEY, HOST);
+            var configuration = new Configuration();
+            string? host = Environment.GetEnvironmentVariable("SSS_API_HOST");
+            if (!string.IsNullOrEmpty(host))
+            {
+                configuration.Host = host;
+            }
+            if (string.IsNullOrEmpty(configuration.AccountName) || string.IsNullOrEmpty(configuration.ApiKey))
+            {
+                Console.Error.WriteLine("Set SSS_API_ACCOUNT_NAME and SSS_API_KEY first.");
+                return 1;
+            }
+            client = new Client(configuration);
 
             try
             {
-                listSchedulesAndResources();
-                listUsers();
-                createUser();
+                ListSchedulesAndResources();
+                ListUsers();
+                CreateUser();
 
-                if (USER_ID > 0)
+                if (userId > 0)
                 {
-                    createUpdateDeleteBooking(USER_ID);
-                    createUpdateDeleteReservation(USER_ID);
-                    createUpdateDeleteAppointment(USER_ID);
-                    updateDeleteUser(USER_ID);
+                    CreateUpdateDeleteBooking(userId);
+                    CreateReservation(userId);
+                    CreateAppointment(userId);
+                    UpdateDeleteUser(userId);
                 }
 
-                listChanges();
-            } catch (SSSException e)
+                ListChanges();
+            }
+            catch (SSSException e)
             {
                 Console.WriteLine("Error!");
                 Console.WriteLine(e.Message);
+                return 1;
             }
-
+            return 0;
         }
 
-        private static void listSchedulesAndResources()
+        private static void ListSchedulesAndResources()
         {
             Console.WriteLine("listing schedules...");
             Schedule[] schedules = client.Schedules.List();
             for (int i = 0; i < schedules.Length; i++)
             {
-                Console.WriteLine(i.ToString() + " " + schedules[i].name);
+                Console.WriteLine(i + " " + schedules[i].name);
                 try
                 {
-                    Resource[] resources = client.Schedules.Resources(schedules[i].id);
-                    for (int j = 0; j < resources.Length; j++)
+                    foreach (Resource resource in client.Schedules.Resources(schedules[i].id))
                     {
-                        Console.WriteLine("     " + resources[j].name);
+                        Console.WriteLine("     " + resource.name);
                     }
                 }
-                catch (SSSException e) { 
-                    if (e.Message.IndexOf("not available for Capacity type") < 0)
-                    {
-                        throw;
-                    }
+                catch (SSSException e) when (e.Message.Contains("not available for Capacity type"))
+                {
+                    // Capacity schedules have no resources.
                 }
             }
         }
 
-        private static void createUpdateDeleteBooking(int userId)
+        private static void CreateUpdateDeleteBooking(int forUserId)
         {
-            if (CAPACITY_SCHEDULE_ID == 0 || CAPACITY_SLOT_ID == 0) return;
+            if (capacityScheduleId == 0 || capacitySlotId == 0)
+            {
+                return;
+            }
 
             var data = new Dictionary<string, string>
             {
-                { "slot_id", CAPACITY_SLOT_ID.ToString() },
+                { "slot_id", capacitySlotId.ToString() },
                 { "name", "example" }
             };
             Console.WriteLine("creating new booking...");
-            Appointment model = client.Appointments.Create(CAPACITY_SCHEDULE_ID, userId, data);
+            Appointment model = client.Appointments.Create(capacityScheduleId, forUserId, data);
 
-            data = new Dictionary<string, string>
+            Console.WriteLine("updating booking " + model.id + "...");
+            client.Appointments.Update(capacityScheduleId, model.id, new Dictionary<string, string>
             {
                 { "name", "updated" }
-            };
-            Console.WriteLine("updating booking " + model.id + " for slot " + model.slot_id + "...");
-            client.Appointments.Update(CAPACITY_SCHEDULE_ID, model.id, data);
-            Console.WriteLine("     name: " + model.name);
+            });
 
             Console.WriteLine("deleting booking...");
-            client.Appointments.Delete(CAPACITY_SCHEDULE_ID, model.id);
+            client.Appointments.Delete(capacityScheduleId, model.id);
         }
 
-        private static void createUpdateDeleteReservation(int userId)
+        private static void CreateReservation(int forUserId)
         {
-            if (RESOURCE_SCHEDULE_ID == 0) return;
-
-            int days = random.Next(1, 90);
-            var data = new Dictionary<string, string>
+            if (resourceScheduleId == 0)
             {
-                { "full_name", "example" },
-                { "description", "desc" },
-                { "address", "addr" },
-                { "phone", "555-5556" },
-                { "mobile", "555-5555" },
-                { "email", "example@example.com" },
-                { "name", "example@example.com" },
-                { "start",  DateTime.Now.AddDays(days).ToString("YYYY-MM-DD HH:MM:SS") },
-                { "finish",  DateTime.Now.AddDays(days).AddHours(1).ToString("YYYY-MM-DD HH:MM:SS") }
-            };
+                return;
+            }
             Console.WriteLine("creating new reservation...");
-            Appointment appointment = client.Appointments.Create(RESOURCE_SCHEDULE_ID, userId, data);
+            Appointment appointment = client.Appointments.Create(resourceScheduleId, forUserId, AppointmentData());
+            Console.WriteLine("     id: " + appointment.id);
         }
 
-        private static void createUpdateDeleteAppointment(int userId)
+        private static void CreateAppointment(int forUserId)
         {
-            if (SERVICE_SCHEDULE_ID == 0) return;
+            if (serviceScheduleId == 0)
+            {
+                return;
+            }
+            Console.WriteLine("creating new appointment...");
+            Appointment appointment = client.Appointments.Create(serviceScheduleId, forUserId, AppointmentData());
+            Console.WriteLine("     id: " + appointment.id);
+        }
 
-            int days = random.Next(1, 90);
-            var data = new Dictionary<string, string>
+        private static Dictionary<string, string> AppointmentData()
+        {
+            DateTime start = DateTime.Now.Date.AddDays(random.Next(1, 90)).AddHours(9);
+            return new Dictionary<string, string>
             {
                 { "full_name", "example" },
                 { "description", "desc" },
@@ -132,65 +156,62 @@ namespace Examples
                 { "mobile", "555-5555" },
                 { "email", "example@example.com" },
                 { "name", "example@example.com" },
-                { "start",  DateTime.Now.AddDays(days).ToString("YYYY-MM-DD HH:MM:SS") },
-                { "finish",  DateTime.Now.AddDays(days).AddHours(1).ToString("YYYY-MM-DD HH:MM:SS") }
+                { "start", start.ToString(DateTimeFormat, CultureInfo.InvariantCulture) },
+                { "finish", start.AddHours(1).ToString(DateTimeFormat, CultureInfo.InvariantCulture) }
             };
-            Console.WriteLine("creating new appointment...");
-            Appointment appointment = client.Appointments.Create(SERVICE_SCHEDULE_ID, userId, data);
         }
 
-        private static void listChanges()
+        private static void ListChanges()
         {
-            int id = RESOURCE_SCHEDULE_ID > 0 ? RESOURCE_SCHEDULE_ID : SERVICE_SCHEDULE_ID;
+            int id = resourceScheduleId > 0 ? resourceScheduleId : serviceScheduleId;
             Console.WriteLine("listing bookings changes...");
             if (id > 0)
             {
                 Changes changes = client.Appointments.Changes(id, DateTime.Now.AddDays(-30));
-                for (int i = 0; i < changes.bookings.Length; i++)
+                foreach (Appointment booking in changes.bookings ?? Array.Empty<Appointment>())
                 {
-                    Console.WriteLine(" " + changes.bookings[i].id);
+                    Console.WriteLine(" " + booking.id);
                 }
             }
 
             Console.WriteLine("listing slots changes...");
-            if (CAPACITY_SCHEDULE_ID > 0)
+            if (capacityScheduleId > 0)
             {
-                Changes changes = client.Appointments.ChangesSlots(CAPACITY_SCHEDULE_ID, DateTime.Now.AddDays(-30));
-                for (int i = 0; i < changes.slots.Length; i++)
+                Changes changes = client.Appointments.ChangesSlots(capacityScheduleId, DateTime.Now.AddDays(-30));
+                foreach (Slot slot in changes.slots ?? Array.Empty<Slot>())
                 {
-                    Console.WriteLine(" " + changes.slots[i].id);
+                    Console.WriteLine(" " + slot.id);
                 }
             }
         }
 
-        private static void listUsers()
+        private static void ListUsers()
         {
             Console.WriteLine("listing users...");
             User[] users = client.Users.List(true, 25);
             for (int i = 0; i < users.Length; i++)
             {
-                Console.WriteLine(i.ToString() + " " + users[i].name + " (" + users[i].id + ")");
+                Console.WriteLine(i + " " + users[i].name + " (" + users[i].id + ")");
             }
         }
 
-        private static void createUser()
+        private static void CreateUser()
         {
             var data = new Dictionary<string, string>
             {
                 { "full_name", "Example" },
                 { "name", RandomString(12) + "@example.com" },
                 { "email", RandomString(12) + "@example.com" },
-                { "password", "example" }
+                { "password", RandomString(16) }
             };
             Console.WriteLine("creating new user...");
             client.Users.Create(data);
-
         }
 
-        private static void updateDeleteUser(int userId)
+        private static void UpdateDeleteUser(int id)
         {
-            Console.WriteLine("Getting user " + userId + "...");
-            User user = client.Users.Get(userId);
+            Console.WriteLine("Getting user " + id + "...");
+            User user = client.Users.Get(id);
             Console.WriteLine(" " + user.name);
 
             var data = new Dictionary<string, string>
@@ -198,14 +219,19 @@ namespace Examples
                 { "country", "FR" },
                 { "address", "Rue 1" }
             };
-            Console.WriteLine("Updating user " + userId + "...");
-            client.Users.Update(userId, data);
+            Console.WriteLine("Updating user " + id + "...");
+            client.Users.Update(id, data);
 
-            Console.WriteLine("Deleting user " + userId + "...");
+            Console.WriteLine("Deleting user " + id + "...");
             client.Users.Delete(user.id);
         }
 
-        public static string RandomString(int length)
+        private static int IdFromEnvironment(string name)
+        {
+            return int.TryParse(Environment.GetEnvironmentVariable(name), out int id) ? id : 0;
+        }
+
+        private static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
