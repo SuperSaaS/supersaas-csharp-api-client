@@ -161,10 +161,28 @@ Appointment appointment = client.Appointments.Create(12345, 67890, new Dictionar
 {
     { "full_name", "New Name" },
     { "email", "example@example.com" },
-    { "slot_id", "12345" }
+    { "description", "Window seat, please" },
+    { "start", "2026-11-02 09:00:00" },
+    { "finish", "2026-11-02 10:00:00" },
+    { "resource_id", "611" }
 }, true, true);
 appointment.id; //=> id of the new appointment
 ```
+
+On a capacity schedule, book places in a slot with `slot_id` and `quantity` instead of a time and resource:
+
+```csharp
+client.Appointments.Create(12345, 67890, new Dictionary<string, string>
+{
+    { "full_name", "New Name" },
+    { "slot_id", "149631371" },
+    { "quantity", "2" }
+});
+```
+
+**Input attributes** go in the `attributes` dictionary on `Create` and `Update`: `start`, `finish`, `name`, `full_name`, `email`, `address`, `mobile`, `phone`, `country`, `field_1`, `field_2`, `field_1_r`, `field_2_r`, `super_field`, `description` and `form_id`, plus what is booked: `resource_id` on a resource schedule, or `slot_id` and `quantity` (number of places) on a capacity schedule. Values are strings; every key in the dictionary is sent as is. The API does not support creating bookings on service schedules.
+
+**Read-only attributes** are filled in on the `Appointment` returned by `Get`, `List`, `Agenda`, `Changes` and friends, but are not meant to be sent: `id`, `created_on`, `updated_on`, `created_by`, `updated_by_name` (the JSON key `updated_by`), `user_id`, `deleted`, `res_name`, `service_id`, `service_name`, `resources`, `waitlisted`, `price`, `price_cents`, `status`, `status_message`, `discount`, `credit_consumed`, `appointment_id`, and `form` when reading with `form` set. Attributes the schedule does not use are left `null`.
 
 #### Update Appointment/Booking
 

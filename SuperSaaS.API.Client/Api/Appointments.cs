@@ -118,8 +118,9 @@ namespace SuperSaaS.API.Api
         /// <param name="scheduleId">The id of the schedule.</param>
         /// <param name="userId">The id of the user the appointment is for.</param>
         /// <param name="attributes">
-        /// Appointment attributes such as <c>full_name</c>, <c>email</c>, <c>start</c>/<c>finish</c>, or
-        /// <c>slot_id</c> for capacity schedules.
+        /// Appointment attributes such as <c>full_name</c>, <c>email</c>, <c>description</c>, <c>form_id</c>,
+        /// <c>start</c>/<c>finish</c> with <c>resource_id</c>, or <c>slot_id</c> and <c>quantity</c> for capacity
+        /// schedules. Every key is sent as given.
         /// </param>
         /// <param name="form">Attach the form data.</param>
         /// <param name="webhook">Trigger the webhooks configured for new appointments.</param>
@@ -146,7 +147,7 @@ namespace SuperSaaS.API.Api
         /// <summary>Updates an appointment.</summary>
         /// <param name="scheduleId">The id of the schedule.</param>
         /// <param name="appointmentId">The id of the appointment.</param>
-        /// <param name="attributes">The appointment attributes to change.</param>
+        /// <param name="attributes">The appointment attributes to change; every key is sent as given.</param>
         /// <param name="form">Attach the form data.</param>
         /// <param name="webhook">Trigger the webhooks configured for appointment changes.</param>
         /// <returns>The API response, if any.</returns>

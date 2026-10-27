@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using NUnit.Framework;
 using SuperSaaS.API.Models;
 using NetHttpMethod = System.Net.Http.HttpMethod;
@@ -86,7 +85,7 @@ namespace SuperSaaS.API.Tests
         {
             Client.Slots.Update(1, 2, new Dictionary<string, string> { { "title", "x" }, { "capacity", null! } });
 
-            Assert.That(Encoding.UTF8.GetString(Handler.LastRequest.Body!), Is.EqualTo("{\"slot\":{\"title\":\"x\"}}"));
+            Assert.That(LastBody, Is.EqualTo("{\"slot\":{\"title\":\"x\"}}"));
         }
     }
 }

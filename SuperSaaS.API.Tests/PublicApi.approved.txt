@@ -112,6 +112,13 @@ type class SuperSaaS.API.Models.Appointment : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.Appointment.property public System.Int32 service_id { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.Int32 slot_id { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.Int32 user_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Int32[] resources { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Nullable<System.Int32> appointment_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Nullable<System.Int32> credit_consumed { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Nullable<System.Int32> discount { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Nullable<System.Int32> form_id { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Nullable<System.Int32> price_cents { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.Nullable<System.Int32> quantity { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String address { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String country { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String created_by { public get; public set; }
@@ -123,6 +130,7 @@ type class SuperSaaS.API.Models.Appointment : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.Appointment.property public System.String field_2_r { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String finish { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String full_name { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String meeting_url { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String mobile { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String name { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String phone { public get; public set; }
@@ -131,6 +139,7 @@ type class SuperSaaS.API.Models.Appointment : SuperSaaS.API.Models.BaseModel
   SuperSaaS.API.Models.Appointment.property public System.String schedule_name { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String service_name { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String status { public get; public set; }
+  SuperSaaS.API.Models.Appointment.property public System.String status_message { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String super_field { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String updated_by_name { public get; public set; }
   SuperSaaS.API.Models.Appointment.property public System.String updated_on { public get; public set; }

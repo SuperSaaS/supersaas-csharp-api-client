@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using NUnit.Framework;
 using SuperSaaS.API.Models;
 using NetHttpMethod = System.Net.Http.HttpMethod;
@@ -76,8 +75,8 @@ namespace SuperSaaS.API.Tests
             Assert.That(slot.id, Is.EqualTo(789));
             Assert.That(LastMessage.Method, Is.EqualTo(NetHttpMethod.Post));
             Assert.That(LastUrl, Is.EqualTo(Host + "/api/slots.json?schedule_id=123"));
-            Assert.That(Body(), Does.StartWith("{\"slot\":{\"start\":\"2030-01-01 10:00:00\","));
-            Assert.That(Body(), Does.Contain("\"capacity\":\"10\""));
+            Assert.That(LastBody, Does.StartWith("{\"slot\":{\"start\":\"2030-01-01 10:00:00\","));
+            Assert.That(LastBody, Does.Contain("\"capacity\":\"10\""));
         }
 
         [Test]
@@ -94,7 +93,7 @@ namespace SuperSaaS.API.Tests
 
             Assert.That(LastMessage.Method, Is.EqualTo(NetHttpMethod.Put));
             Assert.That(LastUrl, Is.EqualTo(Host + "/api/slots/456.json?schedule_id=123"));
-            Assert.That(Body(), Is.EqualTo("{\"slot\":{\"title\":\"Updated\"}}"));
+            Assert.That(LastBody, Is.EqualTo("{\"slot\":{\"title\":\"Updated\"}}"));
         }
 
         [Test]
@@ -105,11 +104,6 @@ namespace SuperSaaS.API.Tests
             Assert.That(LastMessage.Method, Is.EqualTo(NetHttpMethod.Delete));
             Assert.That(LastUrl, Is.EqualTo(Host + "/api/slots/456.json?schedule_id=123"));
             Assert.That(Handler.LastRequest.Body, Is.Null);
-        }
-
-        private string Body()
-        {
-            return Encoding.UTF8.GetString(Handler.LastRequest.Body!);
         }
 
         private static Dictionary<string, string> SlotArgs()

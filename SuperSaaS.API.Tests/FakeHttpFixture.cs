@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using NUnit.Framework;
 
 namespace SuperSaaS.API.Tests
@@ -21,6 +22,8 @@ namespace SuperSaaS.API.Tests
         protected HttpRequestMessage LastMessage => Handler.LastRequest.Message;
 
         protected string LastUrl => LastMessage.RequestUri!.AbsoluteUri;
+
+        protected string LastBody => Encoding.UTF8.GetString(Handler.LastRequest.Body!);
 
         [SetUp]
         public void CreateClient()
