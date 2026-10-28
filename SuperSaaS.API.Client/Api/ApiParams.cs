@@ -21,6 +21,19 @@ namespace SuperSaaS.API.Api
             return value.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>Returns <paramref name="value"/>, or throws when it is <c>null</c> or empty.</summary>
+        /// <param name="value">The required value.</param>
+        /// <param name="paramName">The name of the parameter, used in the exception.</param>
+        /// <exception cref="ArgumentException"><paramref name="value"/> is <c>null</c> or empty.</exception>
+        internal static string Required(string value, string paramName)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Required parameter is missing.", paramName);
+            }
+            return value;
+        }
+
         internal static JsonArgs ScheduleQuery(int scheduleId)
         {
             return new JsonArgs

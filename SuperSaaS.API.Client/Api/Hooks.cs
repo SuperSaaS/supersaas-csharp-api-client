@@ -23,13 +23,14 @@ namespace SuperSaaS.API.Api
         /// must be present.
         /// </param>
         /// <returns>The created hook.</returns>
+        /// <exception cref="System.ArgumentException"><paramref name="targetUrl"/> or <paramref name="evt"/> is empty.</exception>
         public Hook Create(string targetUrl, string evt, int parentId)
         {
             // The server reads these params from the query string as well as from the body.
             var query = new JsonArgs
             {
-                { "target_url", targetUrl },
-                { "event", evt },
+                { "target_url", ApiParams.Required(targetUrl, nameof(targetUrl)) },
+                { "event", ApiParams.Required(evt, nameof(evt)) },
                 { "parent_id", ApiParams.Format(parentId) }
             };
             return Client.Post<Hook>("/hooks", null, query);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using NUnit.Framework;
@@ -46,6 +47,18 @@ namespace SuperSaaS.API.Tests
             Assert.That(Handler.LastRequest.Body, Is.Null);
             Assert.That(hook.Id, Is.EqualTo(123));
             Assert.That(hook.ParentId, Is.EqualTo(456));
+        }
+
+        [TestCase(null, "N", "targetUrl")]
+        [TestCase("", "N", "targetUrl")]
+        [TestCase("https://example.com/hook", null, "evt")]
+        [TestCase("https://example.com/hook", "", "evt")]
+        public void CreateRejectsAMissingTargetUrlOrEvent(string? targetUrl, string? evt, string paramName)
+        {
+            var ex = Assert.Throws<ArgumentException>(() => Client.Hooks.Create(targetUrl!, evt!, 456));
+
+            Assert.That(ex!.ParamName, Is.EqualTo(paramName));
+            Assert.That(Handler.Requests, Is.Empty);
         }
 
         [Test]
