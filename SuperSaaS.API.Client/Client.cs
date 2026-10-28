@@ -24,7 +24,7 @@ namespace SuperSaaS.API
         public const string API_VERSION = "2";
 
         /// <summary>Version of this client library, sent in the User-Agent header.</summary>
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "2.1.0";
 
         /// <summary>
         /// Request timeout in <b>milliseconds</b> (10000 ms = 10 seconds). The name is kept for backwards

@@ -54,7 +54,7 @@ type class SuperSaaS.API.Client : SuperSaaS.API.IClient
   SuperSaaS.API.Client.ctor public SuperSaaS.API.Client(System.String accountName, System.String key, System.String host = null, System.Boolean test = false)
   SuperSaaS.API.Client.field public const System.Int32 TIMEOUT_SECONDS = 10000
   SuperSaaS.API.Client.field public const System.String API_VERSION = "2"
-  SuperSaaS.API.Client.field public const System.String VERSION = "1.1.0"
+  SuperSaaS.API.Client.field public const System.String VERSION = "2.1.0"
   SuperSaaS.API.Client.method public System.Boolean Ping()
   SuperSaaS.API.Client.method public System.Int32 GetResourceIdFromHeader()
   SuperSaaS.API.Client.method public T Delete<T>(System.String path, SuperSaaS.API.NestedJsonArgs postData = null, SuperSaaS.API.JsonArgs queryData = null)
