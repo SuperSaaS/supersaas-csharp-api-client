@@ -9,11 +9,19 @@ namespace SuperSaaS.API.Models
         /// <summary>Address entered with the appointment.</summary>
         public string address { get; set; }
 
+        /// <summary>
+        /// The id of the service appointment this reservation was booked with; <c>null</c> otherwise. Read-only.
+        /// </summary>
+        public int? appointment_id { get; set; }
+
         /// <summary>Country entered with the appointment (two-letter ISO code).</summary>
         public string country { get; set; }
 
         /// <summary>Who created the appointment.</summary>
         public string created_by { get; set; }
+
+        /// <summary>Credit (in cents) used to pay for the appointment; <c>null</c> when none was used. Read-only.</summary>
+        public int? credit_consumed { get; set; }
 
         /// <summary>Description of the appointment.</summary>
         public string description { get; set; }
@@ -23,6 +31,9 @@ namespace SuperSaaS.API.Models
 
         /// <summary>Whether the appointment has been deleted.</summary>
         public bool deleted { get; set; }
+
+        /// <summary>Discount (in cents) given by a promotion code. Read-only.</summary>
+        public int? discount { get; set; }
 
         /// <summary>Email address entered with the appointment.</summary>
         public string email { get; set; }
@@ -42,11 +53,20 @@ namespace SuperSaaS.API.Models
         /// <summary>End time of the appointment.</summary>
         public string finish { get; set; }
 
+        /// <summary>
+        /// The id of the form attached to the appointment, sent when the schedule has a form. Can be sent on create
+        /// and update to link an existing form.
+        /// </summary>
+        public int? form_id { get; set; }
+
         /// <summary>Full name entered with the appointment.</summary>
         public string full_name { get; set; }
 
         /// <summary>The id of the appointment.</summary>
         public int id { get; set; }
+
+        /// <summary>Video meeting URL of the appointment, when the schedule adds one.</summary>
+        public string meeting_url { get; set; }
 
         /// <summary>Mobile phone number entered with the appointment.</summary>
         public string mobile { get; set; }
@@ -60,11 +80,26 @@ namespace SuperSaaS.API.Models
         /// <summary>Price of the appointment.</summary>
         public string price { get; set; }
 
+        /// <summary>
+        /// Price of the appointment in cents, sent when the schedule asks a price or uses a pricing function.
+        /// Read-only.
+        /// </summary>
+        public int? price_cents { get; set; }
+
+        /// <summary>
+        /// Number of places booked (capacity schedules that allow more than one place per booking). Send it together
+        /// with <c>slot_id</c> on create and update.
+        /// </summary>
+        public int? quantity { get; set; }
+
         /// <summary>Name of the booked resource.</summary>
         public string res_name { get; set; }
 
         /// <summary>The id of the booked resource.</summary>
         public int resource_id { get; set; }
+
+        /// <summary>The ids of the resources booked with the service (service schedules). Read-only.</summary>
+        public int[] resources { get; set; }
 
         /// <summary>Role of the user who made the appointment.</summary>
         public int role { get; set; }
@@ -89,6 +124,9 @@ namespace SuperSaaS.API.Models
 
         /// <summary>Status of the appointment.</summary>
         public string status { get; set; }
+
+        /// <summary>Text describing <see cref="status"/>, e.g. a payment status. Read-only.</summary>
+        public string status_message { get; set; }
 
         /// <summary>Custom field visible to superusers only.</summary>
         public string super_field { get; set; }
