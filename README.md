@@ -420,6 +420,8 @@ Contact: [support@supersaas.com](mailto:support@supersaas.com)
 
 The package follows [semantic versioning](https://semver.org/), i.e. MAJOR.MINOR.PATCH
 
+Publishing a GitHub release pushes the package to [NuGet](https://www.nuget.org/packages/SuperSaaS.API.Client) through `.github/workflows/publish.yml`, using Trusted Publishing. The release tag must be `v` followed by the `PackageVersion` in the project file. To publish an existing tag, run the workflow by hand with that tag.
+
 ## License
 
 The SuperSaaS C# API Client is available under the MIT license. See the LICENSE file for more info.
