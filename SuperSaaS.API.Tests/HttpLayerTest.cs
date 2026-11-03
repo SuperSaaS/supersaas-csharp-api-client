@@ -105,6 +105,20 @@ namespace SuperSaaS.API.Tests
 
             var ex = Assert.Throws<SSSException>(() => Client.Get<User>("/users/42"));
             Assert.That(ex!.Message, Is.EqualTo("{\"errors\":[{\"title\":\"Name is invalid\"}]}"));
+            Assert.That(ex.StatusCode, Is.EqualTo(422));
+            Assert.That(ex.Errors, Has.Count.EqualTo(1));
+            Assert.That(ex.Errors[0].Title, Is.EqualTo("Name is invalid"));
+        }
+
+        [Test]
+        public void HttpErrorWithoutJsonBodyHasStatusCodeAndNoErrors()
+        {
+            RespondWith(HttpStatusCode.NotFound, "<html>Not Found</html>");
+
+            var ex = Assert.Throws<SSSException>(() => Client.Get<User>("/users/42"));
+            Assert.That(ex!.Message, Is.EqualTo("<html>Not Found</html>"));
+            Assert.That(ex.StatusCode, Is.EqualTo(404));
+            Assert.That(ex.Errors, Is.Empty);
         }
 
         [Test]
@@ -116,6 +130,8 @@ namespace SuperSaaS.API.Tests
             var ex = Assert.Throws<SSSException>(() => Client.Get<User>("/users/42"));
             Assert.That(ex!.Message, Is.EqualTo("Connection refused"));
             Assert.That(ex.InnerException, Is.SameAs(failure));
+            Assert.That(ex.StatusCode, Is.Null);
+            Assert.That(ex.Errors, Is.Empty);
         }
 
         [Test]

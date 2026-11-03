@@ -15,7 +15,8 @@ namespace SuperSaaS.API
 {
     /// <summary>
     /// Client for the SuperSaaS API. Holds the account credentials and exposes the API endpoints through
-    /// <see cref="Appointments"/>, <see cref="Forms"/>, <see cref="Schedules"/> and <see cref="Users"/>.
+    /// <see cref="Appointments"/>, <see cref="Forms"/>, <see cref="Schedules"/>, <see cref="Hooks"/>,
+    /// <see cref="Slots"/> and <see cref="Users"/>.
     /// </summary>
     public class Client : IClient
     {
@@ -23,7 +24,7 @@ namespace SuperSaaS.API
         public const string API_VERSION = "2";
 
         /// <summary>Version of this client library, sent in the User-Agent header.</summary>
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "2.1.0";
 
         /// <summary>
         /// Request timeout in <b>milliseconds</b> (10000 ms = 10 seconds). The name is kept for backwards
@@ -66,6 +67,12 @@ namespace SuperSaaS.API
 
         /// <summary>Schedule and resource endpoints.</summary>
         public Schedules Schedules { get; set; }
+
+        /// <summary>Webhook endpoints.</summary>
+        public Hooks Hooks { get; set; }
+
+        /// <summary>Slot endpoints for capacity schedules.</summary>
+        public Slots Slots { get; set; }
 
         /// <summary>User endpoints.</summary>
         public Users Users { get; set; }
@@ -110,6 +117,8 @@ namespace SuperSaaS.API
             Appointments = new Appointments(this);
             Forms = new Forms(this);
             Schedules = new Schedules(this);
+            Hooks = new Hooks(this);
+            Slots = new Slots(this);
             Users = new Users(this);
         }
 
@@ -135,6 +144,15 @@ namespace SuperSaaS.API
         public T Delete<T>(string path, NestedJsonArgs postData = null, JsonArgs queryData = null)
         {
             return Request<T>(HttpMethod.DELETE, path, postData, queryData);
+        }
+
+        /// <summary>Checks that the account name and API key are valid.</summary>
+        /// <returns><c>true</c> when the server accepts the credentials.</returns>
+        /// <exception cref="SSSException">The credentials are rejected (e.g. HTTP 401) or the request fails.</exception>
+        public bool Ping()
+        {
+            Get<object>("/ping");
+            return true;
         }
 
         /// <inheritdoc/>
@@ -193,7 +211,7 @@ namespace SuperSaaS.API
                     body = ReadBody(response);
                     if (!response.IsSuccessStatusCode)
                     {
-                        throw new SSSException(body);
+                        throw new SSSException(body, (int)response.StatusCode, SSSException.ParseErrors(body));
                     }
                     location = response.Headers.Location?.OriginalString;
                 }

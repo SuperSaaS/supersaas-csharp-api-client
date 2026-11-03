@@ -66,7 +66,7 @@ Details of the data structures, parameters, and values can be found on the devel
 
 https://www.supersaas.com/info/dev
 
-All methods are synchronous. Failed requests throw a `SuperSaaS.API.SSSException`: for errors returned by the API its `Message` is the response body; for network errors and timeouts it is the message of the underlying exception, which is available as `InnerException`.
+All methods are synchronous. Failed requests throw a `SuperSaaS.API.SSSException`: for errors returned by the API its `Message` is the response body, `StatusCode` the HTTP status and `Errors` the parsed `errors` array of the response (`IList<ApiError>` with `Status`, `Title` and `Code`; empty when the body has none). For network errors and timeouts the message is that of the underlying exception, which is available as `InnerException`, and `StatusCode` is `null`.
 
 ```csharp
 try
@@ -76,6 +76,8 @@ try
 catch (SSSException e)
 {
     Console.WriteLine(e.Message);
+    Console.WriteLine(e.StatusCode);      //=> 404
+    Console.WriteLine(e.Errors[0].Title); //=> "Not found"
 }
 ```
 
@@ -159,10 +161,28 @@ Appointment appointment = client.Appointments.Create(12345, 67890, new Dictionar
 {
     { "full_name", "New Name" },
     { "email", "example@example.com" },
-    { "slot_id", "12345" }
+    { "description", "Window seat, please" },
+    { "start", "2026-11-02 09:00:00" },
+    { "finish", "2026-11-02 10:00:00" },
+    { "resource_id", "611" }
 }, true, true);
 appointment.id; //=> id of the new appointment
 ```
+
+On a capacity schedule, book places in a slot with `slot_id` and `quantity` instead of a time and resource:
+
+```csharp
+client.Appointments.Create(12345, 67890, new Dictionary<string, string>
+{
+    { "full_name", "New Name" },
+    { "slot_id", "149631371" },
+    { "quantity", "2" }
+});
+```
+
+**Input attributes** go in the `attributes` dictionary on `Create` and `Update`: `start`, `finish`, `name`, `full_name`, `email`, `address`, `mobile`, `phone`, `country`, `field_1`, `field_2`, `field_1_r`, `field_2_r`, `super_field`, `description` and `form_id`, plus what is booked: `resource_id` on a resource schedule, or `slot_id` and `quantity` (number of places) on a capacity schedule. Values are strings; every key in the dictionary is sent as is. The API does not support creating bookings on service schedules.
+
+**Read-only attributes** are filled in on the `Appointment` returned by `Get`, `List`, `Agenda`, `Changes` and friends, but are not meant to be sent: `id`, `created_on`, `updated_on`, `created_by`, `updated_by_name` (the JSON key `updated_by`), `user_id`, `deleted`, `res_name`, `service_id`, `service_name`, `resources`, `waitlisted`, `price`, `price_cents`, `status`, `status_message`, `discount`, `credit_consumed`, `appointment_id`, and `form` when reading with `form` set. Attributes the schedule does not use are left `null`.
 
 #### Update Appointment/Booking
 
@@ -241,6 +261,90 @@ Get recently changed slots for a capacity schedule by `scheduleId`, from a given
 ```csharp
 Changes changes = client.Appointments.ChangesSlots(12345, DateTime.Now.AddDays(-7));
 changes.slots; //=> SuperSaaS.API.Models.Slot[]
+```
+
+#### List Slots
+
+Get slots of a capacity schedule by `scheduleId`, with optional `start`/`finish` time and `limit`/`offset` pagination params (`limit` defaults to 100, max 2500):
+
+```csharp
+client.Slots.List(12345, DateTime.Now, DateTime.Now.AddDays(7), 10, 0); //=> SuperSaaS.API.Models.Slot[]
+```
+
+#### Get Slot
+
+Get a single slot of a capacity schedule by `scheduleId` and `slotId`:
+
+```csharp
+client.Slots.Get(12345, 67890); //=> SuperSaaS.API.Models.Slot
+```
+
+#### Create Slot
+
+Create a slot in a capacity schedule by `scheduleId` with slot attributes (`start`, `finish`, `title`, `description`, `location`, `capacity`, `price`, `color`). A `capacity` of `"-"` or blank is unlimited, `"0"` means no places:
+
+```csharp
+client.Slots.Create(12345, new Dictionary<string, string>
+{
+    { "start", "2030-01-01 10:00:00" },
+    { "finish", "2030-01-01 11:00:00" },
+    { "title", "Example" },
+    { "capacity", "10" }
+}); //=> SuperSaaS.API.Models.Slot (with only the id set)
+```
+
+#### Update Slot
+
+Update a slot by `scheduleId` and `slotId` with slot attributes:
+
+```csharp
+client.Slots.Update(12345, 67890, new Dictionary<string, string>
+{
+    { "title", "New Title" }
+});
+```
+
+#### Delete Slot
+
+Delete a single slot by `scheduleId` and `slotId`. This also deletes the bookings on the slot:
+
+```csharp
+client.Slots.Delete(12345, 67890);
+```
+
+_Note: slots only work for capacity type schedules._
+
+#### Ping
+
+Check that the account name and API key are valid. Returns `true`, or throws an `SSSException` (e.g. on a 401):
+
+```csharp
+client.Ping(); //=> true
+```
+
+#### Create Hook
+
+Subscribe a `targetUrl` to an event. `evt` is the trigger letter (or a word starting with it): `U` user created, `M` user modified, `N` new appointment, `C` changed appointment, `R` reminder, `F` follow-up, `S` form submitted, `O` form changed, `H` mail, `P` credit purchase. `parentId` is the schedule id for N/C/R/F and the super form id for S/O; for U/M/H/P it is ignored but must be given:
+
+```csharp
+client.Hooks.Create("https://example.com/hook", "N", 12345); //=> SuperSaaS.API.Models.Hook (Id, ParentId)
+```
+
+#### Delete Hook
+
+Delete a hook by `hookId` and `parentId`:
+
+```csharp
+client.Hooks.Delete(67890, 12345);
+```
+
+#### Input Field List
+
+Get the fields of the input form for bookings of a schedule. Without a schedule id the user fields are returned:
+
+```csharp
+client.Schedules.InputFieldList(12345); //=> SuperSaaS.API.Models.FieldList[] (Name, Type, Label, Required)
+client.Schedules.InputFieldList();      //=> user fields
 ```
 
 #### List Template Forms
